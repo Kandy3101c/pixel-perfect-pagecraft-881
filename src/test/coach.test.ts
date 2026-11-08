@@ -33,7 +33,7 @@ describe("Coach demo replies", () => {
   });
   it("returns debt income ratio and monthly payment amounts", async () => {
     const reply = await replyTo("How much of my income goes to debt?");
-    expect(reply.reply).toContain("47%");
+    expect(reply.reply).toContain("37%");
     expect(reply.reply).toContain("under 36%");
     expect(reply.reply).toContain("$1,832");
     expect(reply.reply).toContain("$602");

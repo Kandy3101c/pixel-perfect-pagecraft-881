@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { BankConnectionDialog } from "@/components/BankConnectionDialog";
 import { disconnectBank, reconnectBank } from "@/data/api";
 import type { Institution } from "@/data/types";
+import { sessionStore } from "@/data/session";
 import { relativeSyncTime } from "@/lib/accounts";
 
 export function LinkedBanks({ institutions }: { institutions: Institution[] }) {

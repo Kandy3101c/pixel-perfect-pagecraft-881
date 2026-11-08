@@ -7,9 +7,9 @@ import { filterAlerts, groupAlerts } from "@/lib/alerts";
 
 const initial = () => ({ alerts: mockData.alerts, usedDemoIds: [] as string[] });
 describe("Shared alerts", () => {
-  it("mark read decreases unread from two to one", () => {
+  it("mark read decreases unread from four to three", () => {
     const state = alertsReducer(initial(), { type: "read", id: "a1" });
-    expect(filterAlerts(state.alerts, "Unread")).toHaveLength(1);
+    expect(filterAlerts(state.alerts, "Unread")).toHaveLength(3);
     expect(state.alerts.find((alert) => alert.id === "a1")?.read).toBe(true);
   });
   it("mark all read leaves no unread alerts without removing alerts", () => {

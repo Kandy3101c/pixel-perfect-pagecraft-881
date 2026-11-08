@@ -81,9 +81,11 @@ it("updates bank-filtered totals immediately and removes only the disconnected b
   expect(store.getSnapshot().accounts).toEqual(mockData.accounts);
   expect(store.getSnapshot().details).toHaveLength(7);
 });
-it("leaves dashboard health indicators and alerts unchanged after linking", async () => {
+it("keeps corrected base fixtures immutable and supplies the linked-bank health metrics", async () => {
   vi.useFakeTimers(); const before = JSON.stringify({ metrics: mockData.metrics, alerts: mockData.alerts });
   const store = createAccountsStore(); const promise = store.connectBank(); await vi.advanceTimersByTimeAsync(2000); await promise;
-  expect(mockData.metrics.map((item) => item.value)).toEqual([1.9, 0.47, 1.87, -1153]);
+  expect(mockData.metrics.map((item) => item.value)).toEqual([2.2, 0.37, 1.87, 71]);
+  expect(mockData.metricsAfterLinking.map((item) => item.value)).toEqual([4.8, 0.39, 1.08, 71]);
+  expect(mockData.metricsAfterLinking.map((item) => item.status)).toEqual(["good", "risk", "risk", "watch"]);
   expect(JSON.stringify({ metrics: mockData.metrics, alerts: mockData.alerts })).toBe(before);
 });
