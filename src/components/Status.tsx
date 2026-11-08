@@ -18,7 +18,7 @@ export function StatusPill({ status }: { status: MetricStatus }) {
 }
 
 export const SEVERITY = {
-  critical: { label: "Critical", icon: AlertOctagon, cls: "bg-risk-soft text-risk border-risk/30" },
-  warning: { label: "Warning", icon: AlertTriangle, cls: "bg-watch-soft text-watch border-watch/30" },
-  info: { label: "Info", icon: Info, cls: "bg-accent text-primary border-primary/20" },
+  critical: { label: "Critical", icon: AlertOctagon, cls: "bg-risk-soft text-risk border-risk-border", text: "text-risk" },
+  warning: { label: "Warning", icon: AlertTriangle, cls: "bg-watch-soft text-watch border-watch/30", text: "text-watch" },
+  info: { label: "Info", icon: Info, cls: "bg-accent text-primary border-primary/20", text: "text-primary" },
 } satisfies Record<AlertSeverity, unknown>;
