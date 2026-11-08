@@ -12,7 +12,7 @@ import type { Alert, ChatMessage } from "@/data/types";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/coach")({
-  validateSearch: z.object({ alertId: z.string().optional() }),
+  validateSearch: z.object({ alertId: z.string().optional(), account: z.string().optional() }),
   head: () => ({
     meta: [
       { title: "Coach — Steady" },
@@ -36,7 +36,7 @@ type DisplayMessage = ChatMessage & { verified?: boolean; failed?: boolean; retr
 type PendingRequest = { text: string; history: ChatMessage[]; context?: { alertId?: string } };
 
 function Coach() {
-  const { alertId } = Route.useSearch();
+  const { alertId, account } = Route.useSearch();
   const { alerts } = useAlertsStore();
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [draft, setDraft] = useState("");
@@ -44,6 +44,7 @@ function Coach() {
   const [infoOpen, setInfoOpen] = useState(false);
   const busy = useRef(false);
   const lastAlert = useRef<string | undefined>(undefined);
+  const lastAccount = useRef<string | undefined>(undefined);
   const end = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
@@ -80,6 +81,13 @@ function Coach() {
     lastAlert.current = alertId;
     if (alert) send(`Explain this alert: ${alert.title}`, { alertId });
   }, [alertId, alerts, send, waiting]);
+
+  useEffect(() => {
+    if (!account) { lastAccount.current = undefined; return; }
+    if (lastAccount.current === account || busy.current) return;
+    lastAccount.current = account;
+    send(`Tell me about my ${account}`);
+  }, [account, send, waiting]);
 
   useEffect(() => { end.current?.scrollIntoView({ block: "nearest" }); }, [messages, waiting]);
   const askAlert = (alert: Alert) => { if (busy.current) return; setInfoOpen(false); send(`Explain this alert: ${alert.title}`, { alertId: alert.id }); };

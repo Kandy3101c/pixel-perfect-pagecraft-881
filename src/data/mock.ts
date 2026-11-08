@@ -1,4 +1,4 @@
-import type { MockData } from "./types";
+import type { AccountDetail, MockData } from "./types";
 
 export const mockData: MockData = {
   customer: { id: "C024", name: "Demo Customer (C024)", asOf: "2026-10-31", creditLimit: 5332.24 },
@@ -40,3 +40,14 @@ export const mockData: MockData = {
     { id: "a3", severity: "info", title: "You paid $30 in fees this year", reason: "Card and loan servicing fees.", suggestedAction: "Ask the coach which fees can be avoided.", date: "2026-10-15", read: true, channels: ["app"] },
   ],
 };
+
+
+export const accountDetails: AccountDetail[] = [
+ {"type":"checking","label":"Checking","history":[7274,6600,6056,5004,6164,7028,6270,6113,6380,6560,5512,6123],"recent":[{"date":"2026-10-21","label":"Mortgage payment","amount":-2062.96},{"date":"2026-10-25","label":"Other spending","amount":-884.35},{"date":"2026-10-28","label":"Credit card payment","amount":-1425.62}]},
+ {"type":"savings","label":"Savings","history":[11954,12002,12072,12132,12190,12252,12307,12365,12410,12453,12501,12577],"recent":[{"date":"2026-10-01","label":"Paycheck deposit","amount":25.05},{"date":"2026-10-05","label":"Savings transfer","amount":25.05},{"date":"2026-10-31","label":"Interest earned","amount":26.15}]},
+ {"type":"ira","label":"IRA (retirement)","history":[46856,47137,47439,47667,47906,48150,48441,48777,49089,49428,49737,50026],"recent":[{"date":"2026-09-30","label":"Interest earned","amount":144.65},{"date":"2026-10-05","label":"Contribution","amount":142.94},{"date":"2026-10-31","label":"Interest earned","amount":145.48}]},
+ {"type":"credit_card","label":"Credit card","history":[9880,9888,9897,9905,9913,9921,9930,9938,9946,9955,9963,9971],"recent":[{"date":"2026-10-19","label":"Dining","amount":311.78},{"date":"2026-10-25","label":"Shopping","amount":311.78},{"date":"2026-10-26","label":"Interest charged","amount":186.81},{"date":"2026-10-28","label":"Payment received","amount":-1425.62}],"payoff":{"months":53,"totalInterest":5823,"assumption":"Assumes no new purchases and a $299 payment every month. With your current spending on the card, the balance is still rising."}},
+ {"type":"auto_loan","label":"Auto loan","history":[30565,30429,30249,30103,29930,29797,29656,29492,29380,29222,29038,28908],"recent":[{"date":"2026-09-21","label":"Payment","amount":-366.42},{"date":"2026-10-20","label":"Interest charged","amount":181.49},{"date":"2026-10-21","label":"Payment","amount":-311.40}],"payoff":{"months":57,"totalInterest":5569,"assumption":"Assumes the scheduled $602 payment every month."}},
+ {"type":"personal_loan","label":"Personal loan","history":[14897,14809,14730,14648,14551,14480,14359,14262,14179,14102,13984,13901],"recent":[{"date":"2026-09-21","label":"Payment","amount":-246.65},{"date":"2026-10-20","label":"Interest charged","amount":128.19},{"date":"2026-10-21","label":"Payment","amount":-211.34}],"payoff":{"months":44,"totalInterest":3046,"assumption":"Assumes the scheduled $386 payment every month."}},
+ {"type":"mortgage","label":"Mortgage","history":[286858,286343,285922,285547,285026,284551,283979,283598,283188,282848,282305,281771],"recent":[{"date":"2026-09-21","label":"Payment","amount":-2075.26},{"date":"2026-10-20","label":"Interest charged","amount":1529.15},{"date":"2026-10-21","label":"Payment","amount":-2062.96}],"payoff":{"months":332,"totalInterest":325707,"assumption":"Assumes the scheduled $1,832 payment every month."}}
+];
