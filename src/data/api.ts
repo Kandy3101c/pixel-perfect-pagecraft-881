@@ -12,7 +12,12 @@ export function useCustomer(): Customer {
 }
 
 export function useAccounts(): Account[] {
-  return useAllAccounts();
+  const state = useAccountsStore();
+  return selectedAccounts(state);
+}
+
+export function selectedAccounts(state: { accounts: Account[]; selectedInstitutionId: string }) {
+  return state.accounts.filter((account) => state.selectedInstitutionId === "all" || account.institutionId === state.selectedInstitutionId);
 }
 
 export function getAccountDetails(accounts = mockData.accounts, details = accountDetails) {
@@ -23,14 +28,16 @@ export function getAccountDetails(accounts = mockData.accounts, details = accoun
 }
 
 export function useAccountDetails() {
-  const { accounts, details } = useAccountsStore();
-  return getAccountDetails(accounts, details);
+  const state = useAccountsStore();
+  return getAccountDetails(selectedAccounts(state), state.details);
 }
 
 export function useAccountSummary() {
-  return accountSummary(useAllAccounts());
+  return accountSummary(useAccounts());
 }
 
+export function useSelectedInstitution() { return useAccountsStore().selectedInstitutionId; }
+export function selectInstitution(institutionId: string) { accountsStore.selectInstitution(institutionId); }
 export function useInstitutions() { return useAccountsStore().institutions; }
 export function useAllAccounts() { return useAccountsStore().accounts; }
 export function subscribeToAccountChanges(callback: (change: AccountChange) => void) { return accountsStore.subscribeToAccountChanges(callback); }
@@ -66,7 +73,7 @@ export async function sendCoachMessage(
   await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   const text = message.toLowerCase();
   const state = accountsStore.getSnapshot();
-  const account = getAccountDetails(state.accounts, state.details).find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
+  const account = getAccountDetails(selectedAccounts(state), state.details).find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
   if (account) return {
     reply: `Your ${account.label} balance is ${formatUSD(account.balance)}. ${account.rateLabel}. ${account.changeLabel}.${account.payoffLabel ? ` Payoff estimate: ${account.payoffLabel} ${account.payoff?.assumption}` : ""}`,
     sources: [`${account.label} account`, "12-month account history"], verified: true,
