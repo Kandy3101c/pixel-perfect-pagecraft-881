@@ -1,8 +1,8 @@
 # Roadmap
 
-- [ ] Share alert state across bell, Dashboard, Coach, and Alerts.
-- [ ] Build alert filters, date groups, details, and monthly trends.
-- [ ] Add once-per-reset demo events and verify synchronized desktop/mobile flows.
+- [x] Share alert state across bell, Dashboard, Coach, and Alerts.
+- [x] Build alert filters, date groups, details, and monthly trends.
+- [x] Add once-per-reset demo events and verify synchronized desktop/mobile flows.
 
 - [x] Build Coach demo chat, sources, verification badges, waiting and retry states.
 - [x] Add financial context panel and alert-to-Coach links, plus dashboard shortcut.
