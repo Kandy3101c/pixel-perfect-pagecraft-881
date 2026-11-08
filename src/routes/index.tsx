@@ -33,7 +33,7 @@ const kFmt = (v: number) => `$${+(v / 1000).toFixed(1)}k`;
 function Card({ title, children, className }: { title?: string; children: ReactNode; className?: string }) {
   return (
     <section className={cn("rounded-2xl border bg-card p-5 shadow-soft md:p-6", className)}>
-      {title && <h2 className="mb-4 text-base font-semibold">{title}</h2>}
+      {title && <h2 className="mb-4 text-center text-base font-semibold">{title}</h2>}
       {children}
     </section>
   );
@@ -59,7 +59,7 @@ function Dashboard() {
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 md:px-8">
       <div className="space-y-6 rounded-3xl bg-background">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Your financial health</h1>
+        <h1 className="text-center text-2xl font-bold tracking-tight md:text-3xl">Your Financial Health</h1>
         <p className="mt-1 text-sm text-muted-foreground">As of {formatDate(customer.asOf)}</p>
       </div>
 
@@ -69,8 +69,8 @@ function Dashboard() {
           <div className={cn("flex flex-col gap-3 rounded-2xl border p-5 sm:flex-row sm:items-start", s.cls)}>
             <s.icon className="h-6 w-6 shrink-0" />
             <div className="flex-1 text-foreground">
-              <p className={cn("text-xs font-bold uppercase tracking-wide", s.text)}>{s.label} alert</p>
-              <p className="mt-0.5 font-semibold">{topAlert.title}</p>
+              <p className={cn("text-center text-xs font-bold uppercase tracking-wide", s.text)}>{s.label} alert</p>
+              <p className="mt-0.5 text-center font-semibold">{topAlert.title}</p>
               <p className="text-sm text-muted-foreground">{topAlert.reason}</p>
               <p className="mt-2 flex items-center gap-1.5 text-sm"><Lightbulb className="h-4 w-4" /> {topAlert.suggestedAction}</p>
             </div>
