@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AppShell } from "../components/AppShell";
 import { AlertsProvider } from "@/data/alertsStore";
 import { Toaster } from "@/components/ui/sonner";
+import { AccountsProvider } from "@/data/accountsStore";
 
 function NotFoundComponent() {
   return (
@@ -132,10 +133,12 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <AlertsProvider>
+        <AccountsProvider>
         <AppShell>
           <Outlet />
         </AppShell>
         <Toaster />
+        </AccountsProvider>
       </AlertsProvider>
     </QueryClientProvider>
   );

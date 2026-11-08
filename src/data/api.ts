@@ -5,33 +5,38 @@ import { accountPresentation, accountSummary } from "@/lib/accounts";
 import { formatUSD } from "@/lib/format";
 import { createDemoAlert, demoEvents } from "./demoAlerts";
 import type { Account, Alert, ChatMessage, CoachReply, Customer, Metric, MonthlyRecord, SpendingByCategory } from "./types";
+import { accountsStore, useAccountsStore, type AccountChange } from "./accountsStore";
 
 export function useCustomer(): Customer {
   return mockData.customer;
 }
 
 export function useAccounts(): Account[] {
-  return mockData.accounts;
+  return useAllAccounts();
 }
 
-function getAccountDetails() {
-  return mockData.accounts.flatMap((account) => {
-    const detail = accountDetails.find((item) => item.type === account.type);
-    return detail ? [accountPresentation(account, detail, mockData.monthly, mockData.customer.creditLimit)] : [];
+export function getAccountDetails(accounts = mockData.accounts, details = accountDetails) {
+  return accounts.flatMap((account) => {
+    const detail = details.find((item) => item.id === account.id);
+    return detail ? [accountPresentation(account, detail, mockData.monthly)] : [];
   });
 }
 
 export function useAccountDetails() {
-  return getAccountDetails();
+  const { accounts, details } = useAccountsStore();
+  return getAccountDetails(accounts, details);
 }
 
 export function useAccountSummary() {
-  return accountSummary(mockData.accounts);
+  return accountSummary(useAllAccounts());
 }
 
-export async function startBankConnection(): Promise<void> {
-  await new Promise<void>((resolve) => setTimeout(resolve, 1000));
-}
+export function useInstitutions() { return useAccountsStore().institutions; }
+export function useAllAccounts() { return useAccountsStore().accounts; }
+export function subscribeToAccountChanges(callback: (change: AccountChange) => void) { return accountsStore.subscribeToAccountChanges(callback); }
+export function connectBank() { return accountsStore.connectBank(); }
+export function disconnectBank(institutionId: string) { accountsStore.disconnectBank(institutionId); }
+export function reconnectBank(institutionId: string) { return accountsStore.reconnectBank(institutionId); }
 
 export function useMonthly(): { months: MonthlyRecord[]; spendingByCategoryLastMonth: SpendingByCategory } {
   return { months: mockData.monthly, spendingByCategoryLastMonth: mockData.spendingByCategoryLastMonth };
@@ -60,7 +65,8 @@ export async function sendCoachMessage(
   void history;
   await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   const text = message.toLowerCase();
-  const account = getAccountDetails().find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
+  const state = accountsStore.getSnapshot();
+  const account = getAccountDetails(state.accounts, state.details).find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
   if (account) return {
     reply: `Your ${account.label} balance is ${formatUSD(account.balance)}. ${account.rateLabel}. ${account.changeLabel}.${account.payoffLabel ? ` Payoff estimate: ${account.payoffLabel} ${account.payoff?.assumption}` : ""}`,
     sources: [`${account.label} account`, "12-month account history"], verified: true,
