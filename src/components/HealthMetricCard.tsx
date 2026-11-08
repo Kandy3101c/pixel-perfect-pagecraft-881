@@ -1,6 +1,7 @@
 import { Info } from "lucide-react";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
-import type { Metric } from "@/data/types";
+import type { Metric, MonthlyRecord } from "@/data/types";
+import { DebtToIncomeTrend } from "@/components/DebtToIncomeTrend";
 import { formatPct, formatUSD } from "@/lib/format";
 import { goalProgress } from "@/lib/goals";
 import { ProgressRing } from "@/components/ProgressRing";
@@ -174,7 +175,7 @@ function MetricVisual({ metric }: { metric: Metric }) {
   }
 }
 
-export function HealthMetricCard({ metric }: { metric: Metric }) {
+export function HealthMetricCard({ metric, months }: { metric: Metric; months: MonthlyRecord[] }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -190,7 +191,7 @@ export function HealthMetricCard({ metric }: { metric: Metric }) {
           <MetricVisual metric={metric} />
         </button>
       </DialogTrigger>
-      <DialogContent className="rounded-2xl">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-2xl">
         <DialogHeader className="text-center sm:text-center">
           <div className="mb-1 flex justify-center">
             <StatusPill status={metric.status} />
@@ -210,6 +211,7 @@ export function HealthMetricCard({ metric }: { metric: Metric }) {
             <p className="mt-1 font-serif text-lg font-semibold">{metric.target}</p>
           </div>
         </div>
+        {metric.id === "debt_to_income" && <DebtToIncomeTrend months={months} />}
       </DialogContent>
     </Dialog>
   );
