@@ -1,7 +1,7 @@
 # Roadmap
 
-- [ ] Audit and replace financial calculations with finished fixture fields and shared formatting.
-- [ ] Verify summaries, bank switching, health visuals, activity, and Coach; report every replaced calculation.
+- [x] Audit and replace financial calculations with finished fixture fields and shared formatting.
+- [x] Verify summaries, bank switching, health visuals, activity, and Coach; report every replaced calculation.
 
 - [x] Correct debt costs, health metrics, alerts, demo events, and Coach figures.
 - [x] Add persistent demo sessions, customer selection, sign-in, and route guards.
