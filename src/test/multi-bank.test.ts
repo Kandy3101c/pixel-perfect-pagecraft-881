@@ -2,7 +2,7 @@ import { afterEach, expect, it, vi } from "vitest";
 import { createAccountsStore } from "@/data/accountsStore";
 import { getAccountDetails, selectedAccounts } from "@/data/api";
 import { mockData } from "@/data/mock";
-import { accountSummary } from "@/lib/accounts";
+import { getAccountsSummary } from "@/data/api";
 
 afterEach(() => vi.useRealTimers());
 it("shares the selected bank with every account read and preserves it through sync", async () => {
@@ -16,7 +16,7 @@ it("shares the selected bank with every account read and preserves it through sy
   expect(selectedAccounts(store.getSnapshot())).toHaveLength(7);
   store.selectInstitution("inst_platypus");
   expect(selectedAccounts(store.getSnapshot()).map((item) => item.id)).toEqual(["acct_plat_savings", "acct_plat_card"]);
-  expect(accountSummary(selectedAccounts(store.getSnapshot()))).toEqual({ assets: 21131.81, debts: 6667.18, monthlyPayments: 200.02 });
+  expect(getAccountsSummary(store.getSnapshot().selectedInstitutionId, store.getSnapshot().institutions)).toEqual({ totalAssets: 21131.81, totalDebts: 6667.18, totalMonthlyDebtPayments: 200.02 });
   expect(store.getSnapshot().accounts).toHaveLength(9);
   store.selectInstitution("all");
   expect(selectedAccounts(store.getSnapshot())).toHaveLength(9);
@@ -66,17 +66,17 @@ it("matches duplicate savings and card types by ID with distinct histories and c
   await vi.advanceTimersByTimeAsync(2000); await promise;
   const state = store.getSnapshot(); const views = getAccountDetails(state.accounts, state.details);
   expect(views.find((item) => item.id === "acct_plat_savings")).toMatchObject({ balance: 21131.81, yield: 2.5, history: [20046,20145,20244,20344,20444,20535,20619,20712,20832,20924,21051,21132] });
-  expect(views.find((item) => item.id === "acct_plat_card")).toMatchObject({ balance: 6667.18, limit: 10095.97, usage: 66, payoff: { months: 53, totalInterest: 3893 }, history: [6606,6612,6617,6623,6628,6634,6639,6645,6651,6656,6662,6667] });
-  expect(views.find((item) => item.id === "acct_pnc_card")).toMatchObject({ limit: 5332.24, usage: 187 });
+  expect(views.find((item) => item.id === "acct_plat_card")).toMatchObject({ balance: 6667.18, creditLimit: 10095.97, utilization: 0.66, payoff: { months: 53, totalInterest: 3893 }, history: [6606,6612,6617,6623,6628,6634,6639,6645,6651,6656,6662,6667] });
+  expect(views.find((item) => item.id === "acct_pnc_card")).toMatchObject({ creditLimit: 5332.24, utilization: 1.87 });
   expect(views.find((item) => item.id === "acct_plat_card")?.activity[3]).toMatchObject({ incoming: true, displayAmount: "+$725.59" });
 });
 it("updates bank-filtered totals immediately and removes only the disconnected bank", async () => {
   vi.useFakeTimers(); const store = createAccountsStore(); const promise = store.connectBank();
   await vi.advanceTimersByTimeAsync(2000); await promise;
-  expect(accountSummary(store.getSnapshot().accounts.filter((item) => item.institutionId === "inst_platypus"))).toEqual({ assets: 21131.81, debts: 6667.18, monthlyPayments: 200.02 });
-  expect(accountSummary(store.getSnapshot().accounts).assets).toBeCloseTo(89857.68);
-  expect(accountSummary(store.getSnapshot().accounts).debts).toBeCloseTo(341218.59);
-  expect(accountSummary(store.getSnapshot().accounts).monthlyPayments).toBeCloseTo(3319.06);
+  expect(getAccountsSummary("inst_platypus", store.getSnapshot().institutions)).toEqual({ totalAssets: 21131.81, totalDebts: 6667.18, totalMonthlyDebtPayments: 200.02 });
+  expect(getAccountsSummary("all", store.getSnapshot().institutions).totalAssets).toBeCloseTo(89857.68);
+  expect(getAccountsSummary("all", store.getSnapshot().institutions).totalDebts).toBeCloseTo(341218.59);
+  expect(getAccountsSummary("all", store.getSnapshot().institutions).totalMonthlyDebtPayments).toBeCloseTo(3319.06);
   store.disconnectBank("inst_platypus");
   expect(store.getSnapshot().accounts).toEqual(mockData.accounts);
   expect(store.getSnapshot().details).toHaveLength(7);

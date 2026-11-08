@@ -1,13 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { accountDetails, mockData } from "@/data/mock";
 import { sendCoachMessage, getAccountDetails } from "@/data/api";
-import { accountSummary } from "@/lib/accounts";
+import { getAccountsSummary } from "@/data/api";
 
 afterEach(() => vi.useRealTimers());
 
 describe("Accounts demo", () => {
   it("sums only financial assets and debt payments from the existing accounts", () => {
-    expect(accountSummary(mockData.accounts)).toEqual({ assets: 68725.87, debts: 334551.41000000003, monthlyPayments: 3119.04 });
+    expect(getAccountsSummary("inst_pnc", [{ id: "inst_pnc" }])).toEqual({ totalAssets: 68725.87, totalDebts: 334551.41, totalMonthlyDebtPayments: 3119.04 });
   });
   it("matches all seven accounts by type with 12 supplied monthly balances", () => {
     const accounts = getAccountDetails();
@@ -15,8 +15,8 @@ describe("Accounts demo", () => {
     for (const account of accounts) {
       expect(account.history).toEqual(accountDetails.find((item) => item.type === account.type)?.history);
       expect(account.chart).toHaveLength(12);
-      expect(account.chart[0]?.month).toBe("Nov 25");
-      expect(account.chart[11]?.month).toBe("Oct 26");
+      expect(account.chart[0]?.month).toBe("2025-11");
+      expect(account.chart[11]?.month).toBe("2026-10");
     }
     expect(accounts[0]?.history).toEqual([7274,6600,6056,5004,6164,7028,6270,6113,6380,6560,5512,6123]);
   });
@@ -33,8 +33,8 @@ describe("Accounts demo", () => {
   });
   it("treats falling debts as good and the rising 187% credit balance as risk", () => {
     const accounts = getAccountDetails();
-    expect(accounts.find((a) => a.type === "auto_loan")).toMatchObject({ good: true, change: -1657 });
-    expect(accounts.find((a) => a.type === "credit_card")).toMatchObject({ good: false, change: 91, usage: 187, usageWidth: "93.5%", limitWidth: "50%" });
+    expect(accounts.find((a) => a.type === "auto_loan")).toMatchObject({ changeTone: "good", change12m: -1657 });
+    expect(accounts.find((a) => a.type === "credit_card")).toMatchObject({ changeTone: "bad", change12m: 91, utilization: 1.87, usageWidth: "93.5%", limitWidth: "50%" });
   });
   it.each([
     ["credit_card", 53, 5823], ["auto_loan", 57, 5569], ["personal_loan", 44, 3046], ["mortgage", 332, 325707],

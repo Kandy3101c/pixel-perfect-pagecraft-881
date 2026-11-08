@@ -2,7 +2,6 @@ import {
   CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
 import type { MonthlyRecord } from "@/data/types";
-import { debtToIncomeHistory } from "@/lib/debt-to-income";
 import { formatMonthLabel, formatPercent } from "@/lib/format";
 
 const axisTick = {
@@ -12,7 +11,7 @@ const axisTick = {
 };
 
 export function DebtToIncomeTrend({ months }: { months: MonthlyRecord[] }) {
-  const history = debtToIncomeHistory(months);
+  const history = months;
   const first = history[0];
   const last = history.at(-1);
 
@@ -24,19 +23,19 @@ export function DebtToIncomeTrend({ months }: { months: MonthlyRecord[] }) {
           {formatMonthLabel(first.month)} – {formatMonthLabel(last.month)}
         </p>
       )}
-      {history.some((point) => point.ratio !== null) ? (
+      {history.some((point) => point.debtToIncome !== null) ? (
         <div className="mt-4 h-56 w-full font-serif">
           <ResponsiveContainer>
             <LineChart data={history} margin={{ top: 8, right: 16, bottom: 8, left: 0 }} accessibilityLayer>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
               <XAxis dataKey="month" tickFormatter={formatMonthLabel} tick={axisTick} axisLine={false} tickLine={false} minTickGap={24} />
-              <YAxis tickFormatter={formatPercent} tick={axisTick} axisLine={false} tickLine={false} width={44} domain={[0, (max: number) => Math.max(0.6, Math.ceil(max * 10) / 10)]} />
+              <YAxis tickFormatter={formatPercent} tick={axisTick} axisLine={false} tickLine={false} width={44} domain={[0, 0.6]} />
               <Tooltip
                 labelFormatter={(month) => formatMonthLabel(String(month))}
                 formatter={(value: number) => [formatPercent(value), "Debt-to-income"]}
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, boxShadow: "var(--shadow-soft)" }}
               />
-              <Line dataKey="ratio" name="Debt-to-income" type="linear" stroke="var(--chart-1)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--chart-1)" }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
+              <Line dataKey="debtToIncome" name="Debt-to-income" type="linear" stroke="var(--chart-1)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--chart-1)" }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
