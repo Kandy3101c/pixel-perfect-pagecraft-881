@@ -17,6 +17,14 @@ export interface Account {
   monthlyPayment?: number;
 }
 
+export type AccountDetail = {
+  type: string;
+  label: string;
+  history: number[];
+  recent: { date: string; label: string; amount: number }[];
+  payoff?: { months: number; totalInterest: number; assumption: string };
+};
+
 export interface MonthlyRecord {
   month: string;
   income: number;
