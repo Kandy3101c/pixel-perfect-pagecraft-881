@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import type { Metric, MonthlyRecord } from "@/data/types";
 import { DebtToIncomeTrend } from "@/components/DebtToIncomeTrend";
@@ -175,14 +176,14 @@ function MetricVisual({ metric }: { metric: Metric }) {
   }
 }
 
-export function HealthMetricCard({ metric, months }: { metric: Metric; months: MonthlyRecord[] }) {
+export function HealthMetricCard({ metric, months, highlight = false }: { metric: Metric; months: MonthlyRecord[]; highlight?: boolean }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
         <button
           type="button"
           aria-label={`${metric.label}: ${metricValue(metric)}. View details`}
-          className="flex min-h-64 w-full cursor-pointer flex-col items-center gap-3 rounded-2xl border bg-card p-5 text-center shadow-soft transition-colors hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:p-6"
+          className={cn("flex min-h-64 w-full cursor-pointer flex-col items-center gap-3 rounded-2xl border bg-card p-5 text-center shadow-soft transition-all hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:p-6", highlight && "border-primary bg-accent ring-2 ring-primary/40")}
         >
           <span className="flex w-full items-center justify-center gap-2 text-center font-serif text-base font-medium text-muted-foreground">
             <span>{metric.label}</span>

@@ -6,6 +6,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { BankConnectionDialog } from "@/components/BankConnectionDialog";
 import { disconnectBank, reconnectBank } from "@/data/api";
 import type { Institution } from "@/data/types";
+import { sessionStore } from "@/data/session";
 import { relativeSyncTime } from "@/lib/accounts";
 
 export function LinkedBanks({ institutions }: { institutions: Institution[] }) {
@@ -21,7 +22,7 @@ export function LinkedBanks({ institutions }: { institutions: Institution[] }) {
           {bank.status === "error" && <><AlertCircle className="h-3 w-3 text-risk" />Sync failed<Button variant="link" size="sm" className="h-auto p-0 text-xs" onClick={() => void reconnectBank(bank.id)}>Retry</Button></>}
         </div>
       </div>
-      <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" aria-label={`Manage ${bank.name}`} title={`Manage ${bank.name}`} disabled={bank.status === "syncing"}><MoreHorizontal /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem className="text-risk" onSelect={() => { disconnectBank(bank.id); toast.success(`${bank.name} disconnected.`); }}><Unplug />Disconnect</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+      <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" aria-label={`Manage ${bank.name}`} title={`Manage ${bank.name}`} disabled={bank.status === "syncing"}><MoreHorizontal /></Button></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem className="text-risk" onSelect={() => { disconnectBank(bank.id); sessionStore.removeConnectedItem(bank.name); toast.success(`${bank.name} disconnected.`); }}><Unplug />Disconnect</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
     </div>)}
     <BankConnectionDialog />
   </div></section>;

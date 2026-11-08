@@ -9,6 +9,39 @@ export interface Customer {
   creditLimit: number;
 }
 
+export type CustomerProfile = {
+  id: string;
+  name: string;
+  health: { good: number; watch: number; risk: number };
+};
+
+export type ConnectedItem = {
+  itemId: string;
+  institutionName: string;
+  connectedAt: string;
+};
+
+export type AlertTypeKey =
+  | "overCreditLimit"
+  | "highCardUse"
+  | "cardBalanceRising"
+  | "lowEmergencyFund"
+  | "highDebtPayments"
+  | "spendingOverIncome"
+  | "feesCharged"
+  | "missingPaycheck"
+  | "largeUnusualPayment";
+
+export type AlertSettings = {
+  phoneE164: string;
+  consent: boolean;
+  channels: { app: true; imessage: boolean };
+  alertTypes: Record<AlertTypeKey, boolean>;
+  phoneSeverity: "critical" | "critical_warning" | "all";
+  hideAmounts: boolean;
+  quietHours: { enabled: boolean; start: string; end: string };
+};
+
 export interface Account {
   id: string;
   institutionId: string;
@@ -18,6 +51,7 @@ export interface Account {
   apr?: number;
   monthlyPayment?: number;
   creditLimit?: number;
+  nickname?: string;
 }
 
 export type Institution = { id: string; name: string; source: "pnc" | "plaid"; status: "synced" | "syncing" | "needs_reauth" | "error"; lastSynced: string };
@@ -36,7 +70,7 @@ export interface MonthlyRecord {
   month: string;
   income: number;
   spending: number;
-  debtPayments: number;
+  debtCosts: number;
   creditCardBalance: number;
   savingsBalance: number;
 }
@@ -87,5 +121,6 @@ export interface MockData {
   monthly: MonthlyRecord[];
   spendingByCategoryLastMonth: SpendingByCategory;
   metrics: Metric[];
+  metricsAfterLinking: Metric[];
   alerts: Alert[];
 }

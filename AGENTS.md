@@ -29,6 +29,8 @@ use the editor.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
 
+- SessionProvider owns the local demo session, connected items, and saved alert settings; AppShell guards every screen except Sign-in, and shared-store reset events keep customer switches and demo resets synchronized without a backend.
+- Settings and all bank-entry points reuse the same simulated connection dialog and data-access functions, so replacing the mock backend later does not change presentation boundaries.
 - Health-metric popup history receives the dashboard's monthly records as props and uses a dedicated chart with a pure ratio helper, keeping its time frame aligned with the dashboard and its calculations testable.
 - Coach replies go through sendCoachMessage in the data-access layer; the page holds transient conversation state so a future backend swap changes only the reply boundary.
 - Alert-to-Coach navigation uses optional validated alertId search state and shared alert cards so all entry points send the same context-aware question.

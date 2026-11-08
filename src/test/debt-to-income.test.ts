@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest";
 import { debtToIncomeHistory } from "@/lib/debt-to-income";
 import type { MonthlyRecord } from "@/data/types";
 
-const month = (date: string, income: number, debtPayments: number): MonthlyRecord => ({
-  month: date, income, debtPayments, spending: 0, creditCardBalance: 0, savingsBalance: 0,
+const month = (date: string, income: number, debtCosts: number): MonthlyRecord => ({
+  month: date, income, debtCosts, spending: 0, creditCardBalance: 0, savingsBalance: 0,
 });
 
 describe("debt-to-income history", () => {

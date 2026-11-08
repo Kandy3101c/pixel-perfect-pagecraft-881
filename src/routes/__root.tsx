@@ -16,6 +16,7 @@ import { AppShell } from "../components/AppShell";
 import { AlertsProvider } from "@/data/alertsStore";
 import { Toaster } from "@/components/ui/sonner";
 import { AccountsProvider } from "@/data/accountsStore";
+import { SessionProvider } from "@/data/session";
 
 function NotFoundComponent() {
   return (
@@ -131,15 +132,17 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <AlertsProvider>
-        <AccountsProvider>
-        <AppShell>
-          <Outlet />
-        </AppShell>
-        <Toaster />
-        </AccountsProvider>
-      </AlertsProvider>
+      <SessionProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <AlertsProvider>
+          <AccountsProvider>
+            <AppShell>
+              <Outlet />
+            </AppShell>
+            <Toaster />
+          </AccountsProvider>
+        </AlertsProvider>
+      </SessionProvider>
     </QueryClientProvider>
   );
 }

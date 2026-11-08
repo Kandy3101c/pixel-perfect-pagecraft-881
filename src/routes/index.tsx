@@ -1,12 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Lightbulb, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { useAccounts, useCustomer, useMetrics, useMonthly } from "@/data/api";
+import { consumeHealthHighlight, useAccounts, useCustomer, useInstitutions, useMetrics, useMonthly } from "@/data/api";
 import { useAlertsStore } from "@/data/alertsStore";
 import { SEVERITY } from "@/components/Status";
 import { HealthMetricCard } from "@/components/HealthMetricCard";
@@ -46,7 +46,18 @@ function Dashboard() {
   const accounts = useAccounts();
   const { months, spendingByCategoryLastMonth } = useMonthly();
   const metrics = useMetrics();
+  const institutions = useInstitutions();
+  const linked = institutions.some((bank) => bank.id === "inst_platypus" && bank.status === "synced");
+  const [highlighted, setHighlighted] = useState<string[]>([]);
   const { alerts } = useAlertsStore();
+  useEffect(() => {
+    if (!linked) { setHighlighted([]); return; }
+    const changed = consumeHealthHighlight();
+    if (!changed.length) return;
+    setHighlighted(changed);
+    const timer = setTimeout(() => setHighlighted([]), 2500);
+    return () => clearTimeout(timer);
+  }, [linked]);
 
   const topAlert = alerts.filter((a) => !a.read).sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || b.date.localeCompare(a.date))[0];
   const monthData = months.map((m) => ({ ...m, label: formatMonth(m.month) }));
@@ -87,7 +98,7 @@ function Dashboard() {
       })()}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => <HealthMetricCard key={metric.id} metric={metric} months={months} />)}
+        {metrics.map((metric) => <HealthMetricCard key={metric.id} metric={metric} months={months} highlight={highlighted.includes(metric.id)} />)}
       </div>
       </div>
 
@@ -102,7 +113,7 @@ function Dashboard() {
               <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar isAnimationActive={false} dataKey="income" name="Income" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
               <Bar isAnimationActive={false} dataKey="spending" name="Spending" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-              <Bar isAnimationActive={false} dataKey="debtPayments" name="Debt payments" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="debtCosts" name="Debt payments & interest" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -145,7 +156,7 @@ function Dashboard() {
             {assets.map((a) => (
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium">{humanize(a.type)}</p>
+                  <p className="font-medium">{a.nickname ?? humanize(a.type)}</p>
                   <p className="font-serif text-sm text-muted-foreground">{a.yield ? `${a.yield}% yield` : "No yield"}</p>
                 </div>
                 <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
@@ -161,7 +172,7 @@ function Dashboard() {
             {debts.map((a) => (
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium">{humanize(a.type)}</p>
+                  <p className="font-medium">{a.nickname ?? humanize(a.type)}</p>
                   <p className="font-serif text-sm text-muted-foreground">{a.apr}% APR · {formatUSD(a.monthlyPayment ?? 0, true)}/mo</p>
                 </div>
                 <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
