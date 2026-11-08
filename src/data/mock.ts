@@ -29,15 +29,23 @@ export const mockData: MockData = {
     dining: 312, groceries: 975, housing: 1990, other_spending: 884, shopping: 312, transport: 312, utilities: 884,
   },
   metrics: [
-    { id: "emergency_fund", label: "Emergency fund", value: 1.9, unit: "months", status: "watch", target: "3–6 months", explanation: "Your checking and savings would cover about 1.9 months of spending and debt payments." },
-    { id: "debt_to_income", label: "Debt-to-income", value: 0.47, unit: "percent", status: "risk", target: "under 36%", explanation: "About 47% of your monthly income goes to debt payments." },
+    { id: "emergency_fund", label: "Emergency fund", value: 2.2, unit: "months", status: "watch", target: "3–6 months", explanation: "Your checking and savings would cover about 2.2 months of spending and debt costs." },
+    { id: "debt_to_income", label: "Debt-to-income", value: 0.37, unit: "percent", status: "risk", target: "under 36%", explanation: "Your scheduled debt payments are about 37% of your monthly income." },
     { id: "credit_utilization", label: "Credit card use", value: 1.87, unit: "percent", status: "risk", target: "under 30%", explanation: "Your card balance is 187% of your $5,332 limit. You are over the limit." },
-    { id: "monthly_cash_flow", label: "Monthly cash flow", value: -1153, unit: "dollars", status: "risk", target: "positive", explanation: "On average, spending plus debt payments are about $1,150 more than income each month." },
+    { id: "monthly_cash_flow", label: "Monthly cash flow", value: 71, unit: "dollars", status: "watch", target: "positive", explanation: "On average you have about $71 left each month after spending and debt costs." },
+  ],
+  metricsAfterLinking: [
+    { id: "emergency_fund", label: "Emergency fund", value: 4.8, unit: "months", status: "good", target: "3–6 months", explanation: "Your checking and savings (all banks) would cover about 4.8 months of spending and debt costs." },
+    { id: "debt_to_income", label: "Debt-to-income", value: 0.39, unit: "percent", status: "risk", target: "under 36%", explanation: "Your scheduled debt payments are about 39% of your monthly income." },
+    { id: "credit_utilization", label: "Credit card use", value: 1.08, unit: "percent", status: "risk", target: "under 30%", explanation: "Your card balances are 108% of your $15,428 combined limit. You are over the limit." },
+    { id: "monthly_cash_flow", label: "Monthly cash flow", value: 71, unit: "dollars", status: "watch", target: "positive", explanation: "On average you have about $71 left each month after spending and debt costs. (PNC accounts only.)" },
   ],
   alerts: [
     { id: "a1", severity: "critical", title: "Card is over its limit", reason: "Balance $9,971 vs. limit $5,332.", suggestedAction: "Pay down the card before adding new purchases.", date: "2026-10-31", read: false, metricId: "credit_utilization", channels: ["app", "imessage"] },
     { id: "a2", severity: "warning", title: "Card balance rose 12 months in a row", reason: "Up from $9,880 to $9,971 since last November.", suggestedAction: "Paying $50 more per month would start shrinking it.", date: "2026-10-31", read: false, metricId: "credit_utilization", channels: ["app", "imessage"] },
-    { id: "a3", severity: "info", title: "You paid $30 in fees this year", reason: "Card and loan servicing fees.", suggestedAction: "Ask the coach which fees can be avoided.", date: "2026-10-15", read: true, channels: ["app"] },
+    { id: "a3", severity: "warning", title: "Emergency fund is below 3 months", reason: "Your checking and savings cover about 2.2 months of costs.", suggestedAction: "A common goal is 3 to 6 months. Ask the coach for a plan.", date: "2026-10-31", read: false, metricId: "emergency_fund", channels: ["app"] },
+    { id: "a4", severity: "warning", title: "Debt payments are a large share of income", reason: "Scheduled payments are 37% of income.", suggestedAction: "Ask the coach which debt to pay down first.", date: "2026-10-31", read: false, metricId: "debt_to_income", channels: ["app"] },
+    { id: "a5", severity: "info", title: "You paid $30 in fees this year", reason: "Card and loan servicing fees.", suggestedAction: "Ask the coach which fees can be avoided.", date: "2026-10-15", read: true, channels: ["app"] },
   ],
 };
 
