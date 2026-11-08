@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 export const accountIcons: Record<AccountType, typeof Wallet> = { checking: Wallet, savings: PiggyBank, ira: TrendingUp, credit_card: CreditCard, auto_loan: Car, personal_loan: HandCoins, mortgage: Home };
 
-export function AccountCard({ account, onOpen, bankName, arriving }: { account: AccountView; onOpen: () => void; bankName?: string; arriving?: boolean }) {
+export function AccountCard({ account, onOpen, bankName, arriving }: { account: AccountView; onOpen: () => void; bankName?: string | undefined; arriving?: boolean }) {
   const Icon = accountIcons[account.type];
   const Arrow = account.change < 0 ? ArrowDownRight : ArrowUpRight;
   return <Button variant="ghost" onClick={onOpen} aria-label={`View ${account.label} account`} className={cn("h-full min-w-0 flex-col justify-start gap-0 whitespace-normal rounded-lg border bg-card p-5 text-center shadow-soft hover:bg-card hover:ring-1 hover:ring-primary [&_svg]:size-auto", arriving && "account-arrival")}>

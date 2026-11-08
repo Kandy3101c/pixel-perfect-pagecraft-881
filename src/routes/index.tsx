@@ -143,7 +143,7 @@ function Dashboard() {
         <Card title="What you have">
           <ul className="divide-y">
             {assets.map((a) => (
-              <li key={a.type} className="flex items-center justify-between py-3">
+              <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{humanize(a.type)}</p>
                   <p className="font-serif text-sm text-muted-foreground">{a.yield ? `${a.yield}% yield` : "No yield"}</p>
@@ -159,7 +159,7 @@ function Dashboard() {
         <Card title="What you owe">
           <ul className="divide-y">
             {debts.map((a) => (
-              <li key={a.type} className="flex items-center justify-between py-3">
+              <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{humanize(a.type)}</p>
                   <p className="font-serif text-sm text-muted-foreground">{a.apr}% APR · {formatUSD(a.monthlyPayment ?? 0, true)}/mo</p>
