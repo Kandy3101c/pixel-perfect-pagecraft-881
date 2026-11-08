@@ -28,6 +28,16 @@ export interface MonthlyRecord {
 
 export type SpendingByCategory = Record<string, number>;
 
+export type ChatMessage = {
+  id: string;
+  role: "user" | "coach";
+  text: string;
+  createdAt: string;
+  sources?: string[];
+};
+
+export type CoachReply = { reply: string; sources: string[]; verified: boolean };
+
 export type MetricStatus = "good" | "watch" | "risk";
 export type MetricUnit = "months" | "percent" | "dollars";
 
