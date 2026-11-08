@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Lightbulb, MessageCircle } from "lucide-react";
+import { Lightbulb, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, type ReactNode } from "react";
 import {
@@ -79,19 +79,16 @@ function Dashboard() {
       {topAlert && (() => {
         const s = SEVERITY[topAlert.severity];
         return (
-          <div className={cn("flex flex-col gap-3 rounded-2xl border p-5 sm:flex-row sm:items-start", s.cls)}>
-            <s.icon className="h-6 w-6 shrink-0" />
+          <div className={cn("flex flex-col gap-3 rounded-2xl border p-5 text-center", s.cls)}>
+            <s.icon className="mx-auto h-6 w-6 shrink-0" />
             <div className="flex-1 text-foreground">
-              <p className={cn("text-center text-xs font-bold uppercase tracking-wide", s.text)}>{s.label} alert</p>
-              <p className="mt-0.5 text-center font-semibold">{topAlert.title}</p>
+              <p className={cn("text-xs font-bold uppercase tracking-wide", s.text)}>{s.label} alert</p>
+              <p className="mt-0.5 font-semibold">{topAlert.title}</p>
               <p className="text-sm text-muted-foreground">{topAlert.reason}</p>
-              <p className="mt-2 flex items-center gap-1.5 text-sm"><Lightbulb className="h-4 w-4" /> {topAlert.suggestedAction}</p>
+              <p className="mt-2 flex items-center justify-center gap-1.5 text-sm"><Lightbulb className="h-4 w-4" /> {topAlert.suggestedAction}</p>
             </div>
-            <div className="flex shrink-0 flex-col items-start gap-2">
-            <Button asChild variant="ghost" size="sm"><Link to="/coach" search={{ alertId: topAlert.id }}><MessageCircle />Ask about this</Link></Button>
-            <Link to="/alerts" className="inline-flex items-center gap-1 text-sm font-semibold text-link hover:underline">
-              View all alerts <ArrowRight className="h-4 w-4" />
-            </Link>
+            <div className="flex justify-center">
+              <Button asChild variant="ghost" size="sm"><Link to="/coach" search={{ alertId: topAlert.id }}><MessageCircle />Ask about this</Link></Button>
             </div>
           </div>
         );
