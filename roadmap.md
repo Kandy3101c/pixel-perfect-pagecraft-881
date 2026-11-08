@@ -1,10 +1,10 @@
 # Roadmap
 
-- [ ] Correct debt costs, health metrics, alerts, demo events, and Coach figures.
-- [ ] Add persistent demo sessions, customer selection, sign-in, and route guards.
-- [ ] Reuse the simulated bank connection across Sign-in, Accounts, and Settings.
-- [ ] Build Settings for profiles, linked accounts, notifications, privacy, and reset.
-- [ ] Test the new rules and verify desktop/mobile session and settings flows.
+- [x] Correct debt costs, health metrics, alerts, demo events, and Coach figures.
+- [x] Add persistent demo sessions, customer selection, sign-in, and route guards.
+- [x] Reuse the simulated bank connection across Sign-in, Accounts, and Settings.
+- [x] Build Settings for profiles, linked accounts, notifications, privacy, and reset.
+- [x] Test the new rules and verify desktop/mobile session and settings flows.
 
 - [x] Share bank selection across pages and verify filtered Dashboard accounts and navigation retention.
 
