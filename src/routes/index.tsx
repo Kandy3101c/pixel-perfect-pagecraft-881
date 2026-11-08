@@ -57,6 +57,7 @@ function Dashboard() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 md:px-8">
+      <div className="space-y-6 rounded-3xl border border-beige-border bg-beige p-5 md:p-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight md:text-3xl">Your financial health</h1>
         <p className="mt-1 text-sm text-muted-foreground">As of {formatDate(customer.asOf)}</p>
@@ -82,6 +83,7 @@ function Dashboard() {
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {metrics.map((metric) => <HealthMetricCard key={metric.id} metric={metric} />)}
+      </div>
       </div>
 
       <Card title="Money in vs. money out">
