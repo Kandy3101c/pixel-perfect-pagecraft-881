@@ -3,7 +3,7 @@ import { CoachAlertCard } from "@/components/CoachAlertCard";
 import { useCustomer, useMetrics } from "@/data/api";
 import { useAlertsStore } from "@/data/alertsStore";
 import type { Alert } from "@/data/types";
-import { formatDate, formatPct, formatUSD } from "@/lib/format";
+import { formatDate, formatPercent, formatCurrency, formatMonths } from "@/lib/format";
 
 export function CoachContext({ onAsk }: { onAsk: (alert: Alert) => void }) {
   const metrics = useMetrics();
@@ -15,7 +15,7 @@ export function CoachContext({ onAsk }: { onAsk: (alert: Alert) => void }) {
         {metrics.map((metric) => (
           <div key={metric.id} className="py-4 text-center first:pt-0">
             <h3 className="font-serif text-lg font-semibold">{metric.label}</h3>
-            <p className="my-1 font-serif text-2xl font-semibold tabular-nums">{metric.unit === "percent" ? formatPct(metric.value) : metric.unit === "dollars" ? formatUSD(metric.value) : `${metric.value} months`}</p>
+            <p className="my-1 font-serif text-2xl font-semibold tabular-nums">{metric.unit === "percent" ? formatPercent(metric.value) : metric.unit === "dollars" ? formatCurrency(metric.value) : formatMonths(metric.value)}</p>
             <StatusPill status={metric.status} />
           </div>
         ))}

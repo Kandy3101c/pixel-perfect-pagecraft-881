@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AccountHistory } from "@/components/AccountHistory";
 import { accountIcons } from "@/components/AccountCard";
 import type { AccountView } from "@/lib/accounts";
-import { formatDate, formatUSD } from "@/lib/format";
+import { formatDate, formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export function AccountDetail({ account, onClose }: { account: AccountView | undefined; onClose: () => void }) {
@@ -16,7 +16,7 @@ export function AccountDetail({ account, onClose }: { account: AccountView | und
         <SheetHeader className="items-center text-center">
           {Icon && <Icon className="h-7 w-7 text-primary" />}
           <SheetTitle className="font-serif text-2xl">{account.label}</SheetTitle>
-          <p className="font-serif text-4xl font-semibold">{formatUSD(account.balance)}</p>
+          <p className="font-serif text-4xl font-semibold">{formatCurrency(account.balance)}</p>
           <SheetDescription className="font-serif text-base">{account.rateLabel}</SheetDescription>
         </SheetHeader>
         <div className="mt-8 space-y-7">

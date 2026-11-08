@@ -3,7 +3,7 @@ import {
 } from "recharts";
 import type { MonthlyRecord } from "@/data/types";
 import { debtToIncomeHistory } from "@/lib/debt-to-income";
-import { formatMonth, formatPct } from "@/lib/format";
+import { formatMonthLabel, formatPercent } from "@/lib/format";
 
 const axisTick = {
   fontSize: 13,
@@ -21,7 +21,7 @@ export function DebtToIncomeTrend({ months }: { months: MonthlyRecord[] }) {
       <h3 className="font-serif text-lg font-semibold">Debt-to-income over time</h3>
       {first && last && (
         <p className="mt-1 text-sm text-muted-foreground">
-          {formatMonth(first.month)} – {formatMonth(last.month)}
+          {formatMonthLabel(first.month)} – {formatMonthLabel(last.month)}
         </p>
       )}
       {history.some((point) => point.ratio !== null) ? (
@@ -29,11 +29,11 @@ export function DebtToIncomeTrend({ months }: { months: MonthlyRecord[] }) {
           <ResponsiveContainer>
             <LineChart data={history} margin={{ top: 8, right: 16, bottom: 8, left: 0 }} accessibilityLayer>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
-              <XAxis dataKey="month" tickFormatter={formatMonth} tick={axisTick} axisLine={false} tickLine={false} minTickGap={24} />
-              <YAxis tickFormatter={formatPct} tick={axisTick} axisLine={false} tickLine={false} width={44} domain={[0, (max: number) => Math.max(0.6, Math.ceil(max * 10) / 10)]} />
+              <XAxis dataKey="month" tickFormatter={formatMonthLabel} tick={axisTick} axisLine={false} tickLine={false} minTickGap={24} />
+              <YAxis tickFormatter={formatPercent} tick={axisTick} axisLine={false} tickLine={false} width={44} domain={[0, (max: number) => Math.max(0.6, Math.ceil(max * 10) / 10)]} />
               <Tooltip
-                labelFormatter={(month) => formatMonth(String(month))}
-                formatter={(value: number) => [formatPct(value), "Debt-to-income"]}
+                labelFormatter={(month) => formatMonthLabel(String(month))}
+                formatter={(value: number) => [formatPercent(value), "Debt-to-income"]}
                 contentStyle={{ background: "var(--card)", border: "1px solid var(--border)", borderRadius: 8, boxShadow: "var(--shadow-soft)" }}
               />
               <Line dataKey="ratio" name="Debt-to-income" type="linear" stroke="var(--chart-1)" strokeWidth={2.5} dot={{ r: 3, fill: "var(--chart-1)" }} activeDot={{ r: 5 }} isAnimationActive={false} connectNulls={false} />

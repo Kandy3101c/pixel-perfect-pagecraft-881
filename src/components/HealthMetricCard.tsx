@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import type { Metric, MonthlyRecord } from "@/data/types";
 import { DebtToIncomeTrend } from "@/components/DebtToIncomeTrend";
-import { formatPct, formatUSD } from "@/lib/format";
+import { formatPercent, formatCurrency } from "@/lib/format";
 import { goalProgress } from "@/lib/goals";
 import { ProgressRing } from "@/components/ProgressRing";
 import { STATUS, StatusPill } from "@/components/Status";
@@ -17,8 +17,8 @@ import {
 } from "@/components/ui/dialog";
 
 function metricValue(metric: Metric) {
-  if (metric.unit === "percent") return formatPct(metric.value);
-  if (metric.unit === "dollars") return formatUSD(metric.value);
+  if (metric.unit === "percent") return formatPercent(metric.value);
+  if (metric.unit === "dollars") return formatCurrency(metric.value);
   return `${metric.value} months`;
 }
 
@@ -31,7 +31,7 @@ function EmergencyFundVisual({ metric }: { metric: Metric }) {
         <span className="font-serif text-3xl font-semibold tabular-nums">{metric.value}</span>
         <span className="font-serif text-sm text-muted-foreground">{metric.unit}</span>
       </ProgressRing>
-      <p className="font-serif text-base font-semibold">{formatPct(progress)} of your goal</p>
+      <p className="font-serif text-base font-semibold">{formatPercent(progress)} of your goal</p>
       <StatusPill status={metric.status} />
       <p className="font-serif text-sm font-medium text-muted-foreground">Target: {metric.target}</p>
     </>
@@ -50,7 +50,7 @@ function DebtToIncomeVisual({ metric }: { metric: Metric }) {
       <div
         className="relative mx-auto h-32 w-full max-w-40"
         role="img"
-        aria-label={`${formatPct(metric.value)} of monthly income goes to debt payments`}
+        aria-label={`${formatPercent(metric.value)} of monthly income goes to debt payments`}
       >
         <ResponsiveContainer>
           <PieChart>
@@ -71,7 +71,7 @@ function DebtToIncomeVisual({ metric }: { metric: Metric }) {
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center leading-tight">
           <div>
-            <p className="font-serif text-3xl font-semibold tabular-nums">{formatPct(metric.value)}</p>
+            <p className="font-serif text-3xl font-semibold tabular-nums">{formatPercent(metric.value)}</p>
             <p className="font-serif text-xs text-muted-foreground">of income</p>
           </div>
         </div>
@@ -85,7 +85,7 @@ function DebtToIncomeVisual({ metric }: { metric: Metric }) {
 function CreditUseVisual({ metric }: { metric: Metric }) {
   return (
     <div className="flex w-full flex-1 flex-col items-center justify-center gap-3 whitespace-nowrap">
-      <p className="font-serif text-4xl font-semibold tracking-tight tabular-nums">{formatPct(metric.value)}</p>
+      <p className="font-serif text-4xl font-semibold tracking-tight tabular-nums">{formatPercent(metric.value)}</p>
       <StatusPill status={metric.status} />
     </div>
   );
@@ -109,7 +109,7 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
         viewBox="0 0 320 120"
         className="h-32 w-full"
         role="img"
-        aria-label={`Monthly cash flow is ${formatUSD(metric.value)} on an axis from negative ${formatUSD(bound)} to positive ${formatUSD(bound)}`}
+        aria-label={`Monthly cash flow is ${formatCurrency(metric.value)} on an axis from negative ${formatCurrency(bound)} to positive ${formatCurrency(bound)}`}
       >
         <line x1={zeroX} y1={20} x2={zeroX} y2={84} stroke="var(--muted-foreground)" strokeWidth={1.5} />
         <rect
@@ -130,7 +130,7 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
           fontSize={16}
           fontWeight={600}
         >
-          {formatUSD(metric.value)}
+          {formatCurrency(metric.value)}
         </text>
         <line x1={30} y1={84} x2={290} y2={84} stroke="var(--subtle-foreground)" strokeOpacity={0.5} />
         {[-bound, 0, bound].map((tick, index) => (

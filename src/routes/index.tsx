@@ -6,11 +6,11 @@ import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { consumeHealthHighlight, useAccounts, useCustomer, useInstitutions, useMetrics, useMonthly } from "@/data/api";
+import { consumeHealthHighlight, useAccounts, useCustomer, useInstitutions, useMetrics, useMonthly, useAccountsSummary, useSelectedInstitution } from "@/data/api";
 import { useAlertsStore } from "@/data/alertsStore";
 import { SEVERITY } from "@/components/Status";
 import { HealthMetricCard } from "@/components/HealthMetricCard";
-import { formatDate, formatMonth, formatUSD, humanize } from "@/lib/format";
+import { formatDate, formatMonthLabel, formatCurrency, formatCompactCurrency, formatRate, humanize } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
 const SEV_RANK = { critical: 0, warning: 1, info: 2 } as const;
 const tooltipStyle = { borderRadius: 12, border: "1px solid var(--border)", boxShadow: "var(--shadow-soft)" };
 const axisTick = { fontSize: 13, fill: "var(--muted-foreground)", fontFamily: "var(--font-serif)" };
-const kFmt = (v: number) => `$${+(v / 1000).toFixed(1)}k`;
+
 
 function Card({ title, children, className }: { title?: string; children: ReactNode; className?: string }) {
   return (
@@ -44,6 +44,7 @@ function Card({ title, children, className }: { title?: string; children: ReactN
 function Dashboard() {
   const customer = useCustomer();
   const accounts = useAccounts();
+  const summary = useAccountsSummary(useSelectedInstitution());
   const { months, spendingByCategoryLastMonth } = useMonthly();
   const metrics = useMetrics();
   const institutions = useInstitutions();
@@ -60,13 +61,10 @@ function Dashboard() {
   }, [linked]);
 
   const topAlert = alerts.filter((a) => !a.read).sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || b.date.localeCompare(a.date))[0];
-  const monthData = months.map((m) => ({ ...m, label: formatMonth(m.month) }));
-  const categories = Object.entries(spendingByCategoryLastMonth)
-    .map(([k, v]) => ({ name: humanize(k), amount: v }))
-    .sort((a, b) => b.amount - a.amount);
+  const monthData = months.map((m) => ({ ...m, label: formatMonthLabel(m.month) }));
+  const categories = spendingByCategoryLastMonth;
   const assets = accounts.filter((a) => ["checking", "savings", "ira"].includes(a.type));
   const debts = accounts.filter((a) => !["checking", "savings", "ira"].includes(a.type));
-  const sum = (xs: number[]) => xs.reduce((a, b) => a + b, 0);
 
   return (
     <div className="mx-auto max-w-6xl space-y-6 px-4 py-8 md:px-8">
@@ -105,8 +103,8 @@ function Dashboard() {
             <BarChart data={monthData} barGap={2}>
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
               <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
-              <YAxis tickFormatter={kFmt} tick={axisTick} axisLine={false} tickLine={false} width={44} />
-              <Tooltip formatter={(v: number) => formatUSD(v)} contentStyle={tooltipStyle} cursor={{ fill: "var(--muted)" }} />
+              <YAxis tickFormatter={formatCompactCurrency} tick={axisTick} axisLine={false} tickLine={false} width={44} />
+              <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={tooltipStyle} cursor={{ fill: "var(--muted)" }} />
               <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar isAnimationActive={false} dataKey="income" name="Income" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
               <Bar isAnimationActive={false} dataKey="spending" name="Spending" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
@@ -123,10 +121,10 @@ function Dashboard() {
               <LineChart data={monthData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
                 <XAxis dataKey="label" tick={axisTick} axisLine={false} tickLine={false} />
-                <YAxis domain={[0, 12000]} tickFormatter={kFmt} tick={axisTick} axisLine={false} tickLine={false} width={44} />
-                <Tooltip formatter={(v: number) => formatUSD(v)} contentStyle={tooltipStyle} />
+                <YAxis domain={[0, 12000]} tickFormatter={formatCompactCurrency} tick={axisTick} axisLine={false} tickLine={false} width={44} />
+                <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={tooltipStyle} />
                 <ReferenceLine y={customer.creditLimit} stroke="var(--risk)" strokeDasharray="6 4"
-                  label={{ value: `Limit ${formatUSD(customer.creditLimit)}`, position: "insideBottomRight", fill: "var(--risk)", fontSize: 12 }} />
+                  label={{ value: `Limit ${formatCurrency(customer.creditLimit)}`, position: "insideBottomRight", fill: "var(--risk)", fontSize: 12 }} />
                 <Line isAnimationActive={false} type="monotone" dataKey="creditCardBalance" name="Card balance" stroke="var(--chart-1)" strokeWidth={2.5} dot={false} />
               </LineChart>
             </ResponsiveContainer>
@@ -137,9 +135,9 @@ function Dashboard() {
           <div className="h-64">
             <ResponsiveContainer>
               <BarChart data={categories} layout="vertical" margin={{ left: 8 }}>
-                <XAxis type="number" tickFormatter={(v) => formatUSD(v)} tick={axisTick} axisLine={false} tickLine={false} />
-                <YAxis type="category" dataKey="name" tick={axisTick} axisLine={false} tickLine={false} width={80} />
-                <Tooltip formatter={(v: number) => formatUSD(v)} contentStyle={tooltipStyle} cursor={{ fill: "var(--muted)" }} />
+                <XAxis type="number" tickFormatter={(v) => formatCurrency(v)} tick={axisTick} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="label" tick={axisTick} axisLine={false} tickLine={false} width={80} />
+                <Tooltip formatter={(v: number) => formatCurrency(v)} contentStyle={tooltipStyle} cursor={{ fill: "var(--muted)" }} />
                 <Bar isAnimationActive={false} dataKey="amount" name="Spent" fill="var(--chart-1)" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -154,14 +152,14 @@ function Dashboard() {
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{a.nickname ?? humanize(a.type)}</p>
-                  <p className="font-serif text-sm text-muted-foreground">{a.yield ? `${a.yield}% yield` : "No yield"}</p>
+                  <p className="font-serif text-sm text-muted-foreground">{a.yield ? `${formatRate(a.yield)} yield` : "No yield"}</p>
                 </div>
-                <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
+                <p className="font-serif text-lg font-semibold tabular-nums">{formatCurrency(a.balance)}</p>
               </li>
             ))}
           </ul>
           <div className="mt-2 flex justify-between border-t pt-3 font-bold">
-            <span>Total</span><span className="font-serif text-lg tabular-nums text-good">{formatUSD(sum(assets.map((a) => a.balance)), true)}</span>
+            <span>Total</span><span className="font-serif text-lg tabular-nums text-good">{formatCurrency(summary.totalAssets)}</span>
           </div>
         </Card>
         <Card title="What you owe">
@@ -170,17 +168,17 @@ function Dashboard() {
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{a.nickname ?? humanize(a.type)}</p>
-                  <p className="font-serif text-sm text-muted-foreground">{a.apr}% APR · {formatUSD(a.monthlyPayment ?? 0, true)}/mo</p>
+                  <p className="font-serif text-sm text-muted-foreground">{formatRate(a.apr ?? 0)} APR · {formatCurrency(a.monthlyPayment ?? 0)}/mo</p>
                 </div>
-                <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
+                <p className="font-serif text-lg font-semibold tabular-nums">{formatCurrency(a.balance)}</p>
               </li>
             ))}
           </ul>
           <div className="mt-2 flex justify-between border-t pt-3 font-bold">
             <span>Total</span>
             <span className="text-right tabular-nums">
-              <span className="font-serif text-lg">{formatUSD(sum(debts.map((a) => a.balance)), true)}</span>
-              <span className="font-serif block text-sm font-medium text-muted-foreground">{formatUSD(sum(debts.map((a) => a.monthlyPayment ?? 0)), true)}/mo</span>
+              <span className="font-serif text-lg">{formatCurrency(summary.totalDebts)}</span>
+              <span className="font-serif block text-sm font-medium text-muted-foreground">{formatCurrency(summary.totalMonthlyDebtPayments)}/mo</span>
             </span>
           </div>
         </Card>

@@ -5,9 +5,8 @@ import { AccountCard } from "@/components/AccountCard";
 import { AccountDetail } from "@/components/AccountDetail";
 import { LinkedBanks } from "@/components/LinkedBanks";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { selectInstitution, subscribeToAccountChanges, useAccountDetails, useInstitutions, useSelectedInstitution } from "@/data/api";
-import { accountSummary } from "@/lib/accounts";
-import { formatUSD } from "@/lib/format";
+import { selectInstitution, subscribeToAccountChanges, useAccountDetails, useInstitutions, useSelectedInstitution, useAccountsSummary } from "@/data/api";
+import { formatCurrency } from "@/lib/format";
 
 export const Route = createFileRoute("/accounts")({
   head: () => ({
@@ -28,7 +27,7 @@ function Accounts() {
   const institutions = useInstitutions();
   const activeBank = useSelectedInstitution();
   const filtered = accounts;
-  const summary = accountSummary(filtered);
+  const summary = useAccountsSummary(activeBank);
   const [selected, setSelected] = useState<string>();
   const [arrivals, setArrivals] = useState<string[]>([]);
   useEffect(() => {
@@ -49,7 +48,7 @@ function Accounts() {
       <ToggleGroup type="single" value={activeBank} onValueChange={(value) => { if (value) selectInstitution(value); }} aria-label="Select bank" className="mb-4 w-fit max-w-full flex-wrap justify-start rounded-lg bg-card p-1">
         {[{ id: "all", name: "All banks" }, ...institutions].map((item) => <ToggleGroupItem key={item.id} value={item.id} className="h-auto min-h-9 whitespace-normal px-3 py-2 text-sm data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{item.name}</ToggleGroupItem>)}
       </ToggleGroup>
-      <div className="grid gap-3 sm:grid-cols-3">{[{ label: "What you have", value: summary.assets }, { label: "What you owe", value: summary.debts }, { label: "Monthly debt payments", value: summary.monthlyPayments }].map((stat) => <div key={stat.label} className="rounded-lg border bg-card px-4 py-5 text-center shadow-soft"><h2 className="text-sm font-semibold text-muted-foreground">{stat.label}</h2><p className="mt-2 font-serif text-3xl font-semibold">{formatUSD(stat.value)}</p></div>)}</div>
+      <div className="grid gap-3 sm:grid-cols-3">{[{ label: "What you have", value: summary.totalAssets }, { label: "What you owe", value: summary.totalDebts }, { label: "Monthly debt payments", value: summary.totalMonthlyDebtPayments }].map((stat) => <div key={stat.label} className="rounded-lg border bg-card px-4 py-5 text-center shadow-soft"><h2 className="text-sm font-semibold text-muted-foreground">{stat.label}</h2><p className="mt-2 font-serif text-3xl font-semibold">{formatCurrency(stat.value)}</p></div>)}</div>
       <p className="mt-3 text-center text-xs leading-relaxed text-muted-foreground">Home and car values aren't included in this data, so we don't show net worth.</p>
     </section>
     {filtered.length === 0 && <p className="py-8 text-center text-sm text-muted-foreground">No accounts linked.</p>}

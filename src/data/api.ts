@@ -1,8 +1,7 @@
 // Data access layer. Components must read data only through these hooks.
 // Swap the internals for real API calls later; signatures stay the same.
-import { accountDetails, mockData } from "./mock";
-import { accountPresentation, accountSummary } from "@/lib/accounts";
-import { formatUSD } from "@/lib/format";
+import { accountDetails, accountsSummaries, mockData } from "./mock";
+import { accountPresentation } from "@/lib/accounts";
 import { createDemoAlert, demoEvents } from "./demoAlerts";
 import type { Account, Alert, AlertSettings, ChatMessage, CoachReply, Customer, CustomerProfile, Metric, MonthlyRecord, SpendingByCategory } from "./types";
 import { accountsStore, useAccountsStore, type AccountChange } from "./accountsStore";
@@ -29,7 +28,7 @@ export function selectedAccounts(state: { accounts: Account[]; selectedInstituti
 export function getAccountDetails(accounts = mockData.accounts, details = accountDetails) {
   return accounts.flatMap((account) => {
     const detail = details.find((item) => item.id === account.id);
-    return detail ? [accountPresentation(account, { ...detail, label: account.nickname ?? detail.label }, mockData.monthly)] : [];
+    return detail ? [accountPresentation(account, { ...detail, label: account.nickname ?? detail.label })] : [];
   });
 }
 
@@ -41,7 +40,18 @@ export function useAllAccountDetails() {
   const state = useAccountsStore();
   return getAccountDetails(state.accounts, state.details);
 }
-export function useAccountSummary() { return accountSummary(useAccounts()); }
+export function getAccountsSummary(institutionFilter: string, institutions: { id: string }[]) {
+  const pnc = institutions.some((bank) => bank.id === "inst_pnc");
+  const platypus = institutions.some((bank) => bank.id === "inst_platypus");
+  if (institutionFilter === "inst_pnc") return pnc ? accountsSummaries.pnc : accountsSummaries.empty;
+  if (institutionFilter === "inst_platypus") return platypus ? accountsSummaries.platypus : accountsSummaries.empty;
+  return pnc && platypus ? accountsSummaries.allLinked : pnc ? accountsSummaries.pnc : platypus ? accountsSummaries.platypus : accountsSummaries.empty;
+}
+export function useAccountsSummary(institutionFilter: string) {
+  const state = useAccountsStore();
+  // A bank contributes only once its supplied accounts have arrived.
+  return getAccountsSummary(institutionFilter, state.institutions.filter((bank) => state.accounts.some((account) => account.institutionId === bank.id)));
+}
 export function useSelectedInstitution() { return useAccountsStore().selectedInstitutionId; }
 export function selectInstitution(institutionId: string) { accountsStore.selectInstitution(institutionId); }
 export function useInstitutions() { return useAccountsStore().institutions; }
@@ -122,10 +132,7 @@ export async function sendCoachMessage(message: string, history: ChatMessage[], 
   const text = message.toLowerCase();
   const state = accountsStore.getSnapshot();
   const account = getAccountDetails(selectedAccounts(state), state.details).find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
-  if (account) return {
-    reply: `Your ${account.label} balance is ${formatUSD(account.balance)}. ${account.rateLabel}. ${account.changeLabel}.${account.payoffLabel ? ` Payoff estimate: ${account.payoffLabel} ${account.payoff?.assumption}` : ""}`,
-    sources: [`${account.label} account`, "12-month account history"], verified: true,
-  };
+  if (account) return account.coachReply;
   if (text.includes("explain this alert")) {
     const availableAlerts = [...mockData.alerts, ...demoEvents.map((event) => createDemoAlert(event.type, ""))];
     const alert = context?.alertId ? availableAlerts.find((a) => a.id === context.alertId) : availableAlerts.find((a) => text.includes(a.title.toLowerCase()));
