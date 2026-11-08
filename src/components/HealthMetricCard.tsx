@@ -109,14 +109,14 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
         role="img"
         aria-label={`Monthly cash flow is ${formatUSD(metric.value)} on an axis from negative ${formatUSD(bound)} to positive ${formatUSD(bound)}`}
       >
-        <line x1={zeroX} y1={20} x2={zeroX} y2={84} stroke="var(--muted-foreground)" />
+        <line x1={zeroX} y1={20} x2={zeroX} y2={84} stroke="var(--muted-foreground)" strokeWidth={1.5} />
         <rect
           x={Math.min(zeroX, valueX)}
           y={32}
           width={Math.abs(valueX - zeroX)}
           height={22}
           rx={4}
-          fill={STATUS[metric.status].stroke}
+          fill={isNegative ? "var(--risk)" : "var(--good)"}
         />
         <text
           x={isNegative ? valueX - 8 : valueX + 8}
@@ -129,7 +129,7 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
         >
           {formatUSD(metric.value)}
         </text>
-        <line x1={30} y1={84} x2={290} y2={84} stroke="var(--border)" />
+        <line x1={30} y1={84} x2={290} y2={84} stroke="var(--subtle-foreground)" strokeOpacity={0.5} />
         {[-bound, 0, bound].map((tick, index) => (
           <g key={tick}>
             <line x1={60 + index * 100} y1={80} x2={60 + index * 100} y2={88} stroke="var(--border)" />
@@ -183,7 +183,7 @@ export function HealthMetricCard({ metric }: { metric: Metric }) {
         >
           <span className="flex w-full items-center justify-between gap-2 text-sm font-medium text-muted-foreground">
             <span>{metric.label}</span>
-            <Info className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <Info className="h-4 w-4 shrink-0 text-subtle-foreground" aria-hidden="true" />
           </span>
           <MetricVisual metric={metric} />
         </button>
