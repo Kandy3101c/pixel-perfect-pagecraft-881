@@ -27,7 +27,7 @@ export const Route = createFileRoute("/")({
 
 const SEV_RANK = { critical: 0, warning: 1, info: 2 } as const;
 const tooltipStyle = { borderRadius: 12, border: "1px solid var(--border)", boxShadow: "var(--shadow-soft)" };
-const axisTick = { fontSize: 12, fill: "var(--muted-foreground)" };
+const axisTick = { fontSize: 13, fill: "var(--muted-foreground)", fontFamily: "var(--font-serif)" };
 const kFmt = (v: number) => `$${+(v / 1000).toFixed(1)}k`;
 
 function Card({ title, children, className }: { title?: string; children: ReactNode; className?: string }) {
@@ -141,14 +141,14 @@ function Dashboard() {
               <li key={a.type} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{humanize(a.type)}</p>
-                  <p className="text-xs text-muted-foreground">{a.yield ? `${a.yield}% yield` : "No yield"}</p>
+                  <p className="font-serif text-sm text-muted-foreground">{a.yield ? `${a.yield}% yield` : "No yield"}</p>
                 </div>
-                <p className="font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
+                <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
               </li>
             ))}
           </ul>
           <div className="mt-2 flex justify-between border-t pt-3 font-bold">
-            <span>Total</span><span className="tabular-nums text-good">{formatUSD(sum(assets.map((a) => a.balance)), true)}</span>
+            <span>Total</span><span className="font-serif text-lg tabular-nums text-good">{formatUSD(sum(assets.map((a) => a.balance)), true)}</span>
           </div>
         </Card>
         <Card title="What you owe">
@@ -157,17 +157,17 @@ function Dashboard() {
               <li key={a.type} className="flex items-center justify-between py-3">
                 <div>
                   <p className="font-medium">{humanize(a.type)}</p>
-                  <p className="text-xs text-muted-foreground">{a.apr}% APR · {formatUSD(a.monthlyPayment ?? 0, true)}/mo</p>
+                  <p className="font-serif text-sm text-muted-foreground">{a.apr}% APR · {formatUSD(a.monthlyPayment ?? 0, true)}/mo</p>
                 </div>
-                <p className="font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
+                <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
               </li>
             ))}
           </ul>
           <div className="mt-2 flex justify-between border-t pt-3 font-bold">
             <span>Total</span>
             <span className="text-right tabular-nums">
-              {formatUSD(sum(debts.map((a) => a.balance)), true)}
-              <span className="block text-xs font-medium text-muted-foreground">{formatUSD(sum(debts.map((a) => a.monthlyPayment ?? 0)), true)}/mo</span>
+              <span className="font-serif text-lg">{formatUSD(sum(debts.map((a) => a.balance)), true)}</span>
+              <span className="font-serif block text-sm font-medium text-muted-foreground">{formatUSD(sum(debts.map((a) => a.monthlyPayment ?? 0)), true)}/mo</span>
             </span>
           </div>
         </Card>
