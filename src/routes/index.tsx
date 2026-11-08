@@ -7,7 +7,9 @@ import {
 } from "recharts";
 import { useAccounts, useAlerts, useCustomer, useMetrics, useMonthly } from "@/data/api";
 import type { Metric } from "@/data/types";
-import { SEVERITY, StatusPill } from "@/components/Status";
+import { SEVERITY, STATUS, StatusPill } from "@/components/Status";
+import { ProgressRing } from "@/components/ProgressRing";
+import { goalProgress } from "@/lib/goals";
 import { formatDate, formatMonth, formatPct, formatUSD, humanize } from "@/lib/format";
 import { cn } from "@/lib/utils";
 

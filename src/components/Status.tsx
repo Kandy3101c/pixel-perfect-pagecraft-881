@@ -2,10 +2,10 @@ import { AlertOctagon, AlertTriangle, CheckCircle2, Info } from "lucide-react";
 import type { AlertSeverity, MetricStatus } from "@/data/types";
 import { cn } from "@/lib/utils";
 
-const STATUS = {
-  good: { label: "On track", icon: CheckCircle2, cls: "bg-good-soft text-good" },
-  watch: { label: "Keep an eye on", icon: AlertTriangle, cls: "bg-watch-soft text-watch" },
-  risk: { label: "Needs attention", icon: AlertOctagon, cls: "bg-risk-soft text-risk" },
+export const STATUS = {
+  good: { label: "On track", icon: CheckCircle2, cls: "bg-good-soft text-good", stroke: "var(--good)" },
+  watch: { label: "Keep an eye on", icon: AlertTriangle, cls: "bg-watch-soft text-watch", stroke: "var(--watch)" },
+  risk: { label: "Needs attention", icon: AlertOctagon, cls: "bg-risk-soft text-risk", stroke: "var(--risk)" },
 } as const;
 
 export function StatusPill({ status }: { status: MetricStatus }) {
