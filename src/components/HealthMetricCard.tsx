@@ -34,7 +34,7 @@ function metricValue(metric: Metric) {
 }
 
 function EmergencyFundVisual({ metric }: { metric: Metric }) {
-  const progress = goalProgress(metric.value, metric.unit, metric.target);
+  const progress = goalProgress(metric.value, metric.unit, metric.target) ?? 0;
 
   return (
     <>
