@@ -14,6 +14,7 @@ import { Route as AccountsRouteImport } from './routes/accounts'
 import { Route as AlertsRouteImport } from './routes/alerts'
 import { Route as CoachRouteImport } from './routes/coach'
 import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SigninRouteImport } from './routes/signin'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,6 +41,11 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SigninRoute = SigninRouteImport.update({
+  id: '/signin',
+  path: '/signin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -47,6 +53,7 @@ export interface FileRoutesByFullPath {
   '/alerts': typeof AlertsRoute
   '/coach': typeof CoachRoute
   '/settings': typeof SettingsRoute
+  '/signin': typeof SigninRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -54,6 +61,7 @@ export interface FileRoutesByTo {
   '/alerts': typeof AlertsRoute
   '/coach': typeof CoachRoute
   '/settings': typeof SettingsRoute
+  '/signin': typeof SigninRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -62,13 +70,21 @@ export interface FileRoutesById {
   '/alerts': typeof AlertsRoute
   '/coach': typeof CoachRoute
   '/settings': typeof SettingsRoute
+  '/signin': typeof SigninRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/accounts' | '/alerts' | '/coach' | '/settings'
+  fullPaths: '/' | '/accounts' | '/alerts' | '/coach' | '/settings' | '/signin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/accounts' | '/alerts' | '/coach' | '/settings'
-  id: '__root__' | '/' | '/accounts' | '/alerts' | '/coach' | '/settings'
+  to: '/' | '/accounts' | '/alerts' | '/coach' | '/settings' | '/signin'
+  id:
+    | '__root__'
+    | '/'
+    | '/accounts'
+    | '/alerts'
+    | '/coach'
+    | '/settings'
+    | '/signin'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -77,6 +93,7 @@ export interface RootRouteChildren {
   AlertsRoute: typeof AlertsRoute
   CoachRoute: typeof CoachRoute
   SettingsRoute: typeof SettingsRoute
+  SigninRoute: typeof SigninRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,6 +133,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/signin': {
+      id: '/signin'
+      path: '/signin'
+      fullPath: '/signin'
+      preLoaderRoute: typeof SigninRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -125,6 +149,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlertsRoute: AlertsRoute,
   CoachRoute: CoachRoute,
   SettingsRoute: SettingsRoute,
+  SigninRoute: SigninRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -102,7 +102,7 @@ function Dashboard() {
               <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar isAnimationActive={false} dataKey="income" name="Income" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
               <Bar isAnimationActive={false} dataKey="spending" name="Spending" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-              <Bar isAnimationActive={false} dataKey="debtPayments" name="Debt payments" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="debtCosts" name="Debt payments & interest" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

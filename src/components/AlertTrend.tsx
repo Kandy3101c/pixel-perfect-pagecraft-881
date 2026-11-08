@@ -6,7 +6,7 @@ export function AlertTrend({ metricId }: { metricId: string }) {
   const { months } = useMonthly();
   const customer = useCustomer();
   const credit = metricId === "credit_utilization";
-  const data = months.map((month) => ({ ...month, label: formatMonth(month.month), value: credit ? month.creditCardBalance : metricId === "emergency_fund" ? month.savingsBalance : metricId === "debt_to_income" ? month.debtPayments / month.income * 100 : month.income - month.spending - month.debtPayments }));
+  const data = months.map((month) => ({ ...month, label: formatMonth(month.month), value: credit ? month.creditCardBalance : metricId === "emergency_fund" ? month.savingsBalance : metricId === "debt_to_income" ? month.debtCosts / month.income * 100 : month.income - month.spending - month.debtCosts }));
   const ratio = metricId === "debt_to_income";
   return <section>
     <h3 className="mb-3 font-serif text-lg font-semibold">{credit ? "Credit card balance" : metricId === "emergency_fund" ? "Savings balance" : ratio ? "Debt-to-income" : "Monthly cash flow"} · 12 months</h3>

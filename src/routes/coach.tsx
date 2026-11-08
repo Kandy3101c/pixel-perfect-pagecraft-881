@@ -48,6 +48,12 @@ function Coach() {
   const end = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+  useEffect(() => {
+    const clear = () => { setMessages([]); setDraft(""); setWaiting(false); busy.current = false; };
+    window.addEventListener("steady:clear-coach", clear);
+    window.addEventListener("steady:reset-all", clear);
+    return () => { window.removeEventListener("steady:clear-coach", clear); window.removeEventListener("steady:reset-all", clear); };
+  }, []);
 
   const requestReply = useCallback(async (request: PendingRequest) => {
     if (busy.current) return;
