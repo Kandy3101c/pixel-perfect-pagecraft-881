@@ -14,7 +14,7 @@ function currentAlerts(): { id: string; channels: string[] }[] {
   return JSON.parse(screen.getByTestId("alerts").textContent ?? "[]");
 }
 async function inject(label: string) {
-  fireEvent.click(screen.getByRole("button", { name: label, exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: label }));
   await act(async () => { await vi.advanceTimersByTimeAsync(800); });
 }
 
@@ -53,7 +53,7 @@ describe("Demo controls phone delivery", () => {
     expect(screen.getByRole("button", { name: `${label} · Added` })).toBeDisabled();
     fireEvent.click(screen.getByRole("button", { name: "Reset demo" }));
     expect(currentAlerts()).toEqual([]);
-    expect(screen.getByRole("button", { name: label, exact: true })).toBeEnabled();
+    expect(screen.getByRole("button", { name: label })).toBeEnabled();
     await inject(label);
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(currentAlerts()[0]?.id).not.toBe(first?.id);
