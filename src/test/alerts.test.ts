@@ -15,38 +15,38 @@ describe("Shared alerts", () => {
   it("mark all read leaves no unread alerts without removing alerts", () => {
     const state = alertsReducer(initial(), { type: "readAll" });
     expect(filterAlerts(state.alerts, "Unread")).toHaveLength(0);
-    expect(state.alerts).toHaveLength(3);
+    expect(state.alerts).toHaveLength(5);
   });
   it("dismiss removes only the selected alert", () => {
-    expect(alertsReducer(initial(), { type: "dismiss", id: "a1" }).alerts.map((alert) => alert.id)).toEqual(["a2", "a3"]);
+    expect(alertsReducer(initial(), { type: "dismiss", id: "a1" }).alerts.map((alert) => alert.id)).toEqual(["a2", "a3", "a4", "a5"]);
   });
   it("adds demos once, including after dismissal, until reset", () => {
     const alert = createDemoAlert("medical_bill", "2026-11-08");
     const added = alertsReducer(initial(), { type: "add", alert });
     expect(added.alerts[0]).toEqual(alert);
-    expect(filterAlerts(added.alerts, "Unread")).toHaveLength(3);
+    expect(filterAlerts(added.alerts, "Unread")).toHaveLength(5);
     const dismissed = alertsReducer(added, { type: "dismiss", id: alert.id });
-    expect(alertsReducer(dismissed, { type: "add", alert }).alerts).toHaveLength(3);
+    expect(alertsReducer(dismissed, { type: "add", alert }).alerts).toHaveLength(5);
     const reset = alertsReducer(added, { type: "resetDemo" });
     expect(reset.alerts).toEqual(mockData.alerts);
     expect(reset.usedDemoIds).toEqual([]);
-    expect(alertsReducer(reset, { type: "add", alert }).alerts).toHaveLength(4);
+    expect(alertsReducer(reset, { type: "add", alert }).alerts).toHaveLength(6);
   });
   it("groups by actual date and sorts newest first", () => {
     const today = createDemoAlert("job_loss", "2026-11-08");
     const month = { ...today, id: "month", date: "2026-11-02" };
-    expect(groupAlerts([...mockData.alerts, month, today], "2026-11-08").map((group) => [group.label, group.alerts.map((alert) => alert.id)])).toEqual([["Today", ["demo-job_loss"]], ["This month", ["month"]], ["Earlier", ["a1", "a2", "a3"]]]);
+    expect(groupAlerts([...mockData.alerts, month, today], "2026-11-08").map((group) => [group.label, group.alerts.map((alert) => alert.id)])).toEqual([["Today", ["demo-job_loss"]], ["This month", ["month"]], ["Earlier", ["a1", "a2", "a3", "a4", "a5"]]]);
   });
   it("keeps existing alert metric and delivery assignments", () => {
     expect(mockData.alerts.slice(0, 2).map((alert) => [alert.metricId, alert.channels])).toEqual([["credit_utilization", ["app", "imessage"]], ["credit_utilization", ["app", "imessage"]]]);
-    expect(mockData.alerts[2]?.metricId).toBeUndefined();
+    expect(mockData.alerts[2]?.metricId).toBe("emergency_fund");
     expect(mockData.alerts[2]?.channels).toEqual(["app"]);
   });
 });
 describe("Demo events", () => {
   it.each([
-    ["medical_bill", "critical", "$3,000", "$15,700", "1.6 months", "emergency_fund"],
-    ["job_loss", "critical", "$8,440", "No payroll", "1.9 months", "emergency_fund"],
+    ["medical_bill", "critical", "$3,000", "$15,700", "1.9 months", "emergency_fund"],
+    ["job_loss", "critical", "$8,440", "No payroll", "2.2 months", "emergency_fund"],
     ["rate_increase", "warning", "22.5%", "27.5%", "$42", "credit_utilization"],
   ])("returns %s with the specified financial amounts", (type, severity, amount, other, action, metricId) => {
     const alert = createDemoAlert(type, "2026-11-08");
