@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Lightbulb } from "lucide-react";
+import { ArrowRight, Lightbulb, MessageCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { ReactNode } from "react";
 import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine,
@@ -74,9 +75,12 @@ function Dashboard() {
               <p className="text-sm text-muted-foreground">{topAlert.reason}</p>
               <p className="mt-2 flex items-center gap-1.5 text-sm"><Lightbulb className="h-4 w-4" /> {topAlert.suggestedAction}</p>
             </div>
+            <div className="flex shrink-0 flex-col items-start gap-2">
+            <Button asChild variant="ghost" size="sm"><Link to="/coach" search={{ alertId: topAlert.id }}><MessageCircle />Ask about this</Link></Button>
             <Link to="/alerts" className="inline-flex items-center gap-1 text-sm font-semibold text-link hover:underline">
               View all alerts <ArrowRight className="h-4 w-4" />
             </Link>
+            </div>
           </div>
         );
       })()}
@@ -176,6 +180,7 @@ function Dashboard() {
       <p className="pb-4 text-center text-xs text-muted-foreground">
         Numbers are calculated from your account data. AI explanations are labeled separately.
       </p>
+      <Button asChild className="fixed bottom-20 right-4 z-20 shadow-soft md:bottom-6 md:right-6"><Link to="/coach"><MessageCircle />Ask the coach</Link></Button>
     </div>
   );
 }
