@@ -37,3 +37,12 @@ export function accountPresentation(account: Account, detail: AccountDetail, mon
 }
 
 export type AccountView = ReturnType<typeof accountPresentation>;
+
+export function relativeSyncTime(lastSynced: string, now?: number) {
+  if (now === undefined) return "recently";
+  const minutes = Math.max(0, Math.floor((now - new Date(lastSynced).getTime()) / 60000));
+  if (minutes < 1) return "just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  if (minutes < 1440) return `${Math.floor(minutes / 60)} hr ago`;
+  return `${Math.floor(minutes / 1440)} days ago`;
+}
