@@ -1,4 +1,5 @@
 import { Info } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import type { Metric, MonthlyRecord } from "@/data/types";
 import { DebtToIncomeTrend } from "@/components/DebtToIncomeTrend";

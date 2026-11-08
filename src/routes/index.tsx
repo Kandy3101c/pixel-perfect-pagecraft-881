@@ -145,7 +145,7 @@ function Dashboard() {
             {assets.map((a) => (
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium">{humanize(a.type)}</p>
+                  <p className="font-medium">{a.nickname ?? humanize(a.type)}</p>
                   <p className="font-serif text-sm text-muted-foreground">{a.yield ? `${a.yield}% yield` : "No yield"}</p>
                 </div>
                 <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>
@@ -161,7 +161,7 @@ function Dashboard() {
             {debts.map((a) => (
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="font-medium">{humanize(a.type)}</p>
+                  <p className="font-medium">{a.nickname ?? humanize(a.type)}</p>
                   <p className="font-serif text-sm text-muted-foreground">{a.apr}% APR · {formatUSD(a.monthlyPayment ?? 0, true)}/mo</p>
                 </div>
                 <p className="font-serif text-lg font-semibold tabular-nums">{formatUSD(a.balance, true)}</p>

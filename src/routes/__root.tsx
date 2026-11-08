@@ -16,6 +16,7 @@ import { AppShell } from "../components/AppShell";
 import { AlertsProvider } from "@/data/alertsStore";
 import { Toaster } from "@/components/ui/sonner";
 import { AccountsProvider } from "@/data/accountsStore";
+import { SessionProvider } from "@/data/session";
 
 function NotFoundComponent() {
   return (

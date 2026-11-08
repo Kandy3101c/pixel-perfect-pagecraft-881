@@ -53,7 +53,7 @@ export function BankConnectionDialog({ trigger, bankSignIn = false, onDone }: { 
   return (
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogTrigger asChild>{trigger ?? <Button variant="outline" className="h-auto min-h-16 border-dashed bg-card px-4 py-3"><Plus />Connect a bank</Button>}</DialogTrigger>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto bg-card sm:max-w-md" showCloseButton={step !== "connecting"}>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto bg-card sm:max-w-md">
         <DialogHeader>
           <div className="mb-1 flex items-center justify-between gap-3"><SimulationBadge /><ShieldCheck className="h-5 w-5 text-primary" /></div>
           <DialogTitle>Simulated bank connection</DialogTitle>
