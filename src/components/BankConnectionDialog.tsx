@@ -45,7 +45,7 @@ export function BankConnectionDialog({ trigger, bankSignIn = false, onDone }: { 
       const connectedAt = new Date().toISOString();
       sessionStore.completeConnection({ itemId: result.itemId, institutionName: bankName, connectedAt }, bankSignIn);
       setItemId(result.itemId);
-      if (!bankSignIn) void connectBank();
+      if (!bankSignIn) void connectBank().then(() => toast.success("Health indicators updated with First Platypus Bank"));
       setStep("success");
     } catch { setStep("error"); }
   }

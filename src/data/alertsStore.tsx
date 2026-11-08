@@ -12,16 +12,13 @@ export function alertsReducer(state: AlertsState, action: AlertsAction): AlertsS
     case "readAll": return { ...state, alerts: state.alerts.map((alert) => ({ ...alert, read: true })) };
     case "dismiss": return { ...state, alerts: state.alerts.filter((alert) => alert.id !== action.id) };
     case "resetDemo": return { alerts: state.alerts.filter((alert) => !alert.isDemo), usedDemoIds: [] };
-    case "resetAll": return { alerts: useAlertsInitializer(), usedDemoIds: [] };
+    case "resetAll": return { alerts: mockData.alerts, usedDemoIds: [] };
     case "add":
       if (state.alerts.some((alert) => alert.id === action.alert.id) || (action.alert.isDemo && state.usedDemoIds.includes(action.alert.id))) return state;
       return { alerts: [action.alert, ...state.alerts], usedDemoIds: action.alert.isDemo ? [...state.usedDemoIds, action.alert.id] : state.usedDemoIds };
   }
 }
 
-// Kept separate so the pure reducer can restore the original fixtures without importing component state.
-import { mockData } from "./mock";
-function useAlertsInitializer() { return mockData.alerts; }
 
 type AlertsStore = AlertsState & {
   markAsRead: (id: string) => void;
