@@ -1,8 +1,8 @@
 # Roadmap
 
-- [ ] Share uniquely identified multi-bank accounts across pages with simulated connection and disconnect.
-- [ ] Add linked-bank statuses, bank filtering, live arrivals, and per-card limits.
-- [ ] Test multi-bank rules and verify connection, switching, details, and removal on desktop/mobile.
+- [x] Share uniquely identified multi-bank accounts across pages with simulated connection and disconnect.
+- [x] Add linked-bank statuses, bank filtering, live arrivals, and per-card limits.
+- [x] Test multi-bank rules and verify connection, switching, details, and removal on desktop/mobile.
 
 - [x] Build Accounts summaries, cards, history, activity, and payoff panels from the supplied fixtures.
 - [x] Add account-to-Coach questions and the frontend-only bank connection dialog.
