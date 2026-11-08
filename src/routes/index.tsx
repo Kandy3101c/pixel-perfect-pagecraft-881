@@ -82,7 +82,7 @@ function Dashboard() {
       })()}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => <HealthMetricCard key={metric.id} metric={metric} />)}
+        {metrics.map((metric) => <HealthMetricCard key={metric.id} metric={metric} months={months} />)}
       </div>
       </div>
 
