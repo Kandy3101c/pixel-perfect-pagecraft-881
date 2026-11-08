@@ -29,7 +29,7 @@ export function BankConnectionDialog({ trigger, bankSignIn = false, onDone }: { 
     setStep("intro"); setSearch(""); setBankName(""); setUsername(""); setPassword(""); setItemId(""); setStarting(false);
   }
   function changeOpen(next: boolean) {
-    if (!next && step === "connecting") return;
+    if (!next && (step === "connecting" || starting)) return;
     setOpen(next);
     if (!next) reset();
   }
