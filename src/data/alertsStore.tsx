@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useReducer, type ReactNode } from "react";
 import { useAlerts } from "./api";
+import { mockData } from "./mock";
 import type { Alert } from "./types";
 
 type AlertsState = { alerts: Alert[]; usedDemoIds: string[] };

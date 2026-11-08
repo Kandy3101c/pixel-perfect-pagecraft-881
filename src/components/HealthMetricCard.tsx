@@ -176,7 +176,7 @@ function MetricVisual({ metric }: { metric: Metric }) {
   }
 }
 
-export function HealthMetricCard({ metric, months }: { metric: Metric; months: MonthlyRecord[] }) {
+export function HealthMetricCard({ metric, months, highlight = false }: { metric: Metric; months: MonthlyRecord[]; highlight?: boolean }) {
   return (
     <Dialog>
       <DialogTrigger asChild>

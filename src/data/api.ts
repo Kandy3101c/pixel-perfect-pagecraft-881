@@ -47,7 +47,16 @@ export function selectInstitution(institutionId: string) { accountsStore.selectI
 export function useInstitutions() { return useAccountsStore().institutions; }
 export function useAllAccounts() { return useAccountsStore().accounts; }
 export function subscribeToAccountChanges(callback: (change: AccountChange) => void) { return accountsStore.subscribeToAccountChanges(callback); }
-export function connectBank() { return accountsStore.connectBank(); }
+let healthHighlightPending = false;
+export async function connectBank() {
+  await accountsStore.connectBank();
+  healthHighlightPending = true;
+}
+export function consumeHealthHighlight() {
+  const pending = healthHighlightPending;
+  healthHighlightPending = false;
+  return pending;
+}
 export function disconnectBank(institutionId: string) { accountsStore.disconnectBank(institutionId); }
 export function reconnectBank(institutionId: string) { return accountsStore.reconnectBank(institutionId); }
 export function syncBank(institutionId: string) { return accountsStore.syncBank(institutionId); }
