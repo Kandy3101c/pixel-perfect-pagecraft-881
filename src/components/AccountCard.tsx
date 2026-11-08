@@ -8,12 +8,13 @@ import { cn } from "@/lib/utils";
 
 export const accountIcons: Record<AccountType, typeof Wallet> = { checking: Wallet, savings: PiggyBank, ira: TrendingUp, credit_card: CreditCard, auto_loan: Car, personal_loan: HandCoins, mortgage: Home };
 
-export function AccountCard({ account, onOpen }: { account: AccountView; onOpen: () => void }) {
+export function AccountCard({ account, onOpen, bankName, arriving }: { account: AccountView; onOpen: () => void; bankName?: string | undefined; arriving?: boolean }) {
   const Icon = accountIcons[account.type];
   const Arrow = account.change < 0 ? ArrowDownRight : ArrowUpRight;
-  return <Button variant="ghost" onClick={onOpen} aria-label={`View ${account.label} account`} className="h-full min-w-0 flex-col justify-start gap-0 whitespace-normal rounded-lg border bg-card p-5 text-center shadow-soft hover:bg-card hover:ring-1 hover:ring-primary [&_svg]:size-auto">
+  return <Button variant="ghost" onClick={onOpen} aria-label={`View ${account.label} account`} className={cn("h-full min-w-0 flex-col justify-start gap-0 whitespace-normal rounded-lg border bg-card p-5 text-center shadow-soft hover:bg-card hover:ring-1 hover:ring-primary [&_svg]:size-auto", arriving && "account-arrival")}>
     <Icon className="mb-3 h-6 w-6 text-primary" />
     <h3 className="font-serif text-xl font-semibold">{account.label}</h3>
+    {bankName && <p className="mt-1 text-xs text-muted-foreground">{bankName}</p>}
     <p className="mt-2 font-serif text-3xl font-semibold">{formatUSD(account.balance)}</p>
     <p className="mt-1 font-serif text-base text-muted-foreground">{account.rateLabel}</p>
     <div className="mt-4 w-full"><AccountHistory account={account} compact /></div>
@@ -23,7 +24,7 @@ export function AccountCard({ account, onOpen }: { account: AccountView; onOpen:
         <div className="h-full rounded-sm bg-risk" style={{ width: account.usageWidth }} />
         <span className="absolute top-[-3px] h-4 border-l-2 border-foreground" style={{ left: account.limitWidth }} />
       </div>
-      <p className="mt-2 font-serif text-base text-risk">187% of limit, over limit</p>
+      <p className={cn("mt-2 font-serif text-base", account.usage > 30 ? "text-risk" : "text-good")}>{account.usageLabel}</p>
     </div>}
   </Button>;
 }
