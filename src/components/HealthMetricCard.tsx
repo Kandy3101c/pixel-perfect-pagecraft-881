@@ -26,7 +26,7 @@ function EmergencyFundVisual({ metric }: { metric: Metric }) {
 
   return (
     <>
-      <ProgressRing progress={progress} color={STATUS[metric.status].stroke}>
+      <ProgressRing progress={progress} color="var(--primary)">
         <span className="font-serif text-3xl font-semibold tabular-nums">{metric.value}</span>
         <span className="font-serif text-sm text-muted-foreground">{metric.unit}</span>
       </ProgressRing>
@@ -191,7 +191,7 @@ export function HealthMetricCard({ metric, months }: { metric: Metric; months: M
           <MetricVisual metric={metric} />
         </button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-2xl">
+      <DialogContent className="max-h-[90dvh] overflow-y-auto rounded-2xl bg-card">
         <DialogHeader className="text-center sm:text-center">
           <div className="mb-1 flex justify-center">
             <StatusPill status={metric.status} />
