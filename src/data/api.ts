@@ -153,7 +153,7 @@ export async function saveAlertSettings(customerId: string, settings: AlertSetti
   await postNotifier("/api/alerts/settings", { customerId, settings: notifierSettings }, "Couldn't save alert settings. Is the alert service running?");
   sessionStore.saveAlertSettings(settings);
 }
-export async function notifyPhone(customerId: string, alert: Alert): Promise<{ sent: boolean; why?: string }> {
+export async function notifyPhone(customerId: string, alert: { id: string; severity: string; title: string; reason: string; suggestedAction: string }): Promise<{ sent: boolean; why?: string }> {
   const response = await postNotifier("/api/alerts/notify", {
     customerId,
     alert: { id: alert.id, severity: alert.severity, title: alert.title, reason: alert.reason, suggestedAction: alert.suggestedAction },
