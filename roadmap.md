@@ -1,8 +1,8 @@
 # Roadmap
 
-- [ ] Build Accounts summaries, cards, history, activity, and payoff panels from the supplied fixtures.
-- [ ] Add account-to-Coach questions and the frontend-only bank connection dialog.
-- [ ] Test account calculations and signs; verify desktop/mobile Accounts flows.
+- [x] Build Accounts summaries, cards, history, activity, and payoff panels from the supplied fixtures.
+- [x] Add account-to-Coach questions and the frontend-only bank connection dialog.
+- [x] Test account calculations and signs; verify desktop/mobile Accounts flows.
 
 - [x] Share alert state across bell, Dashboard, Coach, and Alerts.
 - [x] Build alert filters, date groups, details, and monthly trends.
