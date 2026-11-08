@@ -1,5 +1,9 @@
 # Roadmap
 
+- [x] Connect alert settings, test alerts, and demo notifications to the real notifier service.
+- [x] Add unique demo alert IDs, delivery status updates, and offline-safe error handling.
+- [x] Test notifier payloads and verify settings and demo alert flows without visual changes.
+
 - [x] Audit and replace financial calculations with finished fixture fields and shared formatting.
 - [x] Verify summaries, bank switching, health visuals, activity, and Coach; report every replaced calculation.
 

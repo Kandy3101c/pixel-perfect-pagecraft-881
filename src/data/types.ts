@@ -132,6 +132,7 @@ export interface Alert {
   metricId?: string;
   channels?: ("app" | "imessage")[];
   isDemo?: boolean;
+  demoType?: string;
 }
 
 export interface MockData {

@@ -35,7 +35,7 @@ use the editor.
 - Coach replies go through sendCoachMessage in the data-access layer; the page holds transient conversation state so a future backend swap changes only the reply boundary.
 - Alert-to-Coach navigation uses optional validated alertId search state and shared alert cards so all entry points send the same context-aware question.
 - AlertsProvider owns transient app-wide alert state; all alert consumers use useAlertsStore, while useAlerts is only the initial data boundary, preventing divergent unread counts.
-- Demo alert fixtures have stable event IDs shared with mock Coach replies; used demo IDs survive dismissal until reset so presentation events cannot be duplicated.
+- Injected demo alerts have unique event IDs and stable demo-type keys; the data layer posts settings, test alerts, and notifications to the single configured notifier URL, while used demo types survive dismissal until reset so events cannot be duplicated.
 - AccountsProvider exposes one shared in-memory account store including bank selection; account-facing data hooks and Coach account replies filter through that selection while useAllAccounts remains unfiltered, so navigation and cross-page updates stay consistent. Details match by unique account ID.
 - Mock backend fixtures contain finished summaries, changes, tones, utilization, payoff years, activity signs, and chart coordinates; data-access hooks select/join them without arithmetic so a real backend can replace fixtures.
 - All financial and date display formatting lives in src/lib/format.ts; presentation helpers only join supplied fields and format text.

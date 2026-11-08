@@ -1,21 +1,36 @@
 import { useRef, useState } from "react";
-import { Check, ChevronDown, FlaskConical, LoaderCircle } from "lucide-react";
+import { Check, ChevronDown, FlaskConical, LoaderCircle, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { injectDemoEvent } from "@/data/api";
+import { injectDemoEvent, notifyPhone } from "@/data/api";
 import { demoEvents } from "@/data/demoAlerts";
 import { useAlertsStore } from "@/data/alertsStore";
+import { useSession } from "@/data/session";
 
 export function AlertDemoControls({ onAdded }: { onAdded: (id: string) => void }) {
-  const { addAlert, usedDemoIds, resetDemo } = useAlertsStore();
+  const { addAlert, markSentToPhone, usedDemoIds, resetDemo } = useAlertsStore();
+  const session = useSession();
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState<string[]>([]);
   const inFlight = useRef(new Set<string>());
   const inject = async (type: string) => {
     if (inFlight.current.has(type) || usedDemoIds.includes(`demo-${type}`)) return;
     inFlight.current.add(type); setPending([...inFlight.current]);
-    try { const alert = await injectDemoEvent(type); addAlert(alert); onAdded(alert.id); toast.success(`New alert: ${alert.title}`); }
-    catch { toast.error("Couldn't add the demo alert. Please try again."); }
+    try {
+      const alert = await injectDemoEvent(type);
+      addAlert(alert); onAdded(alert.id); toast.success(`New alert: ${alert.title}`);
+      try {
+        const result = await notifyPhone(session.selectedCustomerId ?? "C024", alert);
+        if (result.sent) {
+          markSentToPhone(alert.id);
+          toast.success("Sent to your phone", { icon: <Smartphone /> });
+        } else {
+          toast.info(`Not sent to phone: ${result.why ?? "No reason given"}`);
+        }
+      } catch {
+        toast.info("Alert service is offline. Alert shown in the app only.");
+      }
+    } catch { toast.error("Couldn't add the demo alert. Please try again."); }
     finally { inFlight.current.delete(type); setPending([...inFlight.current]); }
   };
   return <section className="rounded-lg border bg-card shadow-soft">

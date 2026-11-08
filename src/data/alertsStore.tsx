@@ -4,18 +4,25 @@ import { mockData } from "./mock";
 import type { Alert } from "./types";
 
 type AlertsState = { alerts: Alert[]; usedDemoIds: string[] };
-type AlertsAction = { type: "read" | "dismiss"; id: string } | { type: "readAll" | "resetDemo" | "resetAll" } | { type: "add"; alert: Alert };
+type AlertsAction = { type: "read" | "dismiss" | "phoneSent"; id: string } | { type: "readAll" | "resetDemo" | "resetAll" } | { type: "add"; alert: Alert };
+
+function demoKey(alert: Alert) {
+  return alert.demoType ? `demo-${alert.demoType}` : alert.id;
+}
 
 export function alertsReducer(state: AlertsState, action: AlertsAction): AlertsState {
   switch (action.type) {
     case "read": return { ...state, alerts: state.alerts.map((alert) => alert.id === action.id ? { ...alert, read: true } : alert) };
     case "readAll": return { ...state, alerts: state.alerts.map((alert) => ({ ...alert, read: true })) };
     case "dismiss": return { ...state, alerts: state.alerts.filter((alert) => alert.id !== action.id) };
+    case "phoneSent": return { ...state, alerts: state.alerts.map((alert) => alert.id === action.id && !alert.channels?.includes("imessage") ? { ...alert, channels: [...(alert.channels ?? ["app"]), "imessage"] } : alert) };
     case "resetDemo": return { alerts: state.alerts.filter((alert) => !alert.isDemo), usedDemoIds: [] };
     case "resetAll": return { alerts: mockData.alerts, usedDemoIds: [] };
-    case "add":
-      if (state.alerts.some((alert) => alert.id === action.alert.id) || (action.alert.isDemo && state.usedDemoIds.includes(action.alert.id))) return state;
-      return { alerts: [action.alert, ...state.alerts], usedDemoIds: action.alert.isDemo ? [...state.usedDemoIds, action.alert.id] : state.usedDemoIds };
+    case "add": {
+      const key = demoKey(action.alert);
+      if (state.alerts.some((alert) => alert.id === action.alert.id) || (action.alert.isDemo && state.usedDemoIds.includes(key))) return state;
+      return { alerts: [action.alert, ...state.alerts], usedDemoIds: action.alert.isDemo ? [...state.usedDemoIds, key] : state.usedDemoIds };
+    }
   }
 }
 
@@ -25,6 +32,7 @@ type AlertsStore = AlertsState & {
   markAllAsRead: () => void;
   dismiss: (id: string) => void;
   addAlert: (alert: Alert) => void;
+  markSentToPhone: (id: string) => void;
   resetDemo: () => void;
   resetAll: () => void;
 };
@@ -38,7 +46,7 @@ export function AlertsProvider({ children }: { children: ReactNode }) {
     window.addEventListener("steady:reset-all", reset);
     return () => window.removeEventListener("steady:reset-all", reset);
   }, []);
-  return <AlertsContext.Provider value={{ ...state, markAsRead: (id) => dispatch({ type: "read", id }), markAllAsRead: () => dispatch({ type: "readAll" }), dismiss: (id) => dispatch({ type: "dismiss", id }), addAlert: (alert) => dispatch({ type: "add", alert }), resetDemo: () => dispatch({ type: "resetDemo" }), resetAll: () => dispatch({ type: "resetAll" }) }}>{children}</AlertsContext.Provider>;
+  return <AlertsContext.Provider value={{ ...state, markAsRead: (id) => dispatch({ type: "read", id }), markAllAsRead: () => dispatch({ type: "readAll" }), dismiss: (id) => dispatch({ type: "dismiss", id }), addAlert: (alert) => dispatch({ type: "add", alert }), markSentToPhone: (id) => dispatch({ type: "phoneSent", id }), resetDemo: () => dispatch({ type: "resetDemo" }), resetAll: () => dispatch({ type: "resetAll" }) }}>{children}</AlertsContext.Provider>;
 }
 
 export function useAlertsStore() {

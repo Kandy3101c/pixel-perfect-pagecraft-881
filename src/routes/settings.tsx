@@ -115,14 +115,16 @@ function NotificationSettings() {
   async function testAlert() {
     setSending(true);
     try { await sendTestAlert(toPhoneE164(phone)); toast.success(`Test alert sent to ${formatUsPhone(phone)}`); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Couldn't send the test alert. Is the alert service running?"); }
     finally { setSending(false); }
   }
   async function save() {
     setSaving(true);
-    try { await saveAlertSettings({ ...settings, phoneE164: toPhoneE164(phone) }); toast.success("Alert settings saved"); }
+    try { await saveAlertSettings(session.selectedCustomerId ?? "C024", { ...settings, phoneE164: toPhoneE164(phone) }); toast.success("Alert settings saved"); }
+    catch (error) { toast.error(error instanceof Error ? error.message : "Couldn't save alert settings. Is the alert service running?"); }
     finally { setSaving(false); }
   }
-  return <Section id="notifications" title="Alerts & notifications" description="Choose what Steady sends and where it goes. No real texts are sent in this demo.">
+  return <Section id="notifications" title="Alerts & notifications" description="Choose what Steady sends and where it goes.">
     <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end"><div className="space-y-2"><Label htmlFor="alert-phone">Phone number for iMessage alerts</Label><div className="flex"><span className="flex h-9 items-center rounded-l-md border border-r-0 bg-muted px-3 text-sm">+1</span><Input id="alert-phone" inputMode="numeric" autoComplete="tel-national" placeholder="(555) 123-4567" value={phone} onChange={(event) => setPhone(formatUsPhone(event.target.value))} className="rounded-l-none" aria-describedby="phone-error" /></div>{phoneError && <p id="phone-error" role="alert" className="text-xs text-risk">{phoneError}</p>}</div><Button variant="outline" disabled={!canUsePhone || sending} onClick={() => void testAlert()}>{sending ? <LoaderCircle className="motion-safe:animate-spin" /> : <Send />}Send test alert</Button></div>
     <div className="mt-4 flex items-start gap-3"><Checkbox id="alert-consent" checked={settings.consent} onCheckedChange={(checked) => patch({ consent: checked === true })} /><Label htmlFor="alert-consent" className="text-sm font-normal leading-relaxed">I agree to receive financial alerts by text message. Reply STOP to unsubscribe.</Label></div>
     <div className="mt-6 space-y-4"><h3 className="text-sm font-semibold">Channels</h3><SettingToggle id="channel-app" label="In the app" checked disabled onChange={() => undefined} /><SettingToggle id="channel-imessage" label="iMessage" checked={settings.channels.imessage} onChange={(checked) => patch({ channels: { app: true, imessage: checked } })} /></div>
