@@ -7,6 +7,7 @@ import type { Account, Alert, AlertSettings, ChatMessage, CoachReply, Customer, 
 import { accountsStore, useAccountsStore, type AccountChange } from "./accountsStore";
 import { demoCustomers } from "./customerFixtures";
 import { sessionStore, useSession } from "./session";
+import { NOTIFIER_URL } from "./config";
 
 export function useCustomerList(): CustomerProfile[] { return demoCustomers; }
 

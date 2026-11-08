@@ -7,7 +7,7 @@ export const demoEvents = [
 ] as const;
 
 export function createDemoAlert(eventType: string, today: string): Alert {
-  const base = { id: `demo-${eventType}`, date: today, channels: ["app", "imessage"] as ("app" | "imessage")[], isDemo: true, read: false };
+  const base = { id: `demo-${eventType}`, date: today, channels: ["app"] as ("app" | "imessage")[], isDemo: true, demoType: eventType, read: false };
   switch (eventType) {
     case "medical_bill": return { ...base, severity: "critical", title: "Large medical bill paid", reason: "A $3,000 payment left checking and savings at $15,700.", suggestedAction: "Your emergency fund now covers about 1.9 months. Pause extra spending until it is rebuilt.", metricId: "emergency_fund" };
     case "job_loss": return { ...base, severity: "critical", title: "Paycheck didn't arrive", reason: "No payroll deposit this month. Your usual pay is about $8,440.", suggestedAction: "Your checking and savings would cover about 2.2 months of spending and debt costs. Ask the coach which payments to prioritize.", metricId: "emergency_fund" };
