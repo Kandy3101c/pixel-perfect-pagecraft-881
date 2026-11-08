@@ -3,8 +3,7 @@ import { cn } from "@/lib/utils";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import type { Metric, MonthlyRecord } from "@/data/types";
 import { DebtToIncomeTrend } from "@/components/DebtToIncomeTrend";
-import { formatPct, formatUSD } from "@/lib/format";
-import { goalProgress } from "@/lib/goals";
+import { formatPercent, formatCurrency, formatMonths } from "@/lib/format";
 import { ProgressRing } from "@/components/ProgressRing";
 import { STATUS, StatusPill } from "@/components/Status";
 import {
@@ -17,21 +16,21 @@ import {
 } from "@/components/ui/dialog";
 
 function metricValue(metric: Metric) {
-  if (metric.unit === "percent") return formatPct(metric.value);
-  if (metric.unit === "dollars") return formatUSD(metric.value);
-  return `${metric.value} months`;
+  if (metric.unit === "percent") return formatPercent(metric.value);
+  if (metric.unit === "dollars") return formatCurrency(metric.value);
+  return formatMonths(metric.value);
 }
 
 function EmergencyFundVisual({ metric }: { metric: Metric }) {
-  const progress = goalProgress(metric.value, metric.unit, metric.target) ?? 0;
+  const progress = metric.goalProgress ?? 0;
 
   return (
     <>
-      <ProgressRing progress={progress} color="var(--primary)">
+      <ProgressRing progress={progress} offset={metric.ringOffset ?? 0} color="var(--primary)">
         <span className="font-serif text-3xl font-semibold tabular-nums">{metric.value}</span>
         <span className="font-serif text-sm text-muted-foreground">{metric.unit}</span>
       </ProgressRing>
-      <p className="font-serif text-base font-semibold">{formatPct(progress)} of your goal</p>
+      <p className="font-serif text-base font-semibold">{formatPercent(progress)} of your goal</p>
       <StatusPill status={metric.status} />
       <p className="font-serif text-sm font-medium text-muted-foreground">Target: {metric.target}</p>
     </>
@@ -39,23 +38,18 @@ function EmergencyFundVisual({ metric }: { metric: Metric }) {
 }
 
 function DebtToIncomeVisual({ metric }: { metric: Metric }) {
-  const debtShare = Math.min(100, Math.max(0, metric.value * 100));
-  const data = [
-    { name: "Debt payments", value: debtShare },
-    { name: "Remaining income", value: 100 - debtShare },
-  ];
 
   return (
     <>
       <div
         className="relative mx-auto h-32 w-full max-w-40"
         role="img"
-        aria-label={`${formatPct(metric.value)} of monthly income goes to debt payments`}
+        aria-label={`${formatPercent(metric.value)} of monthly income goes to debt payments`}
       >
         <ResponsiveContainer>
           <PieChart>
             <Pie
-              data={data}
+              data={metric.pieData ?? []}
               dataKey="value"
               startAngle={90}
               endAngle={-270}
@@ -71,7 +65,7 @@ function DebtToIncomeVisual({ metric }: { metric: Metric }) {
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center leading-tight">
           <div>
-            <p className="font-serif text-3xl font-semibold tabular-nums">{formatPct(metric.value)}</p>
+            <p className="font-serif text-3xl font-semibold tabular-nums">{formatPercent(metric.value)}</p>
             <p className="font-serif text-xs text-muted-foreground">of income</p>
           </div>
         </div>
@@ -85,23 +79,16 @@ function DebtToIncomeVisual({ metric }: { metric: Metric }) {
 function CreditUseVisual({ metric }: { metric: Metric }) {
   return (
     <div className="flex w-full flex-1 flex-col items-center justify-center gap-3 whitespace-nowrap">
-      <p className="font-serif text-4xl font-semibold tracking-tight tabular-nums">{formatPct(metric.value)}</p>
+      <p className="font-serif text-4xl font-semibold tracking-tight tabular-nums">{formatPercent(metric.value)}</p>
       <StatusPill status={metric.status} />
     </div>
   );
 }
 
-function cashFlowAxisLabel(value: number) {
-  if (value === 0) return "$0";
-  const sign = value > 0 ? "+" : "−";
-  return `${sign}$${+(Math.abs(value) / 1000).toFixed(1)}k`;
-}
-
 function CashFlowVisual({ metric }: { metric: Metric }) {
-  const bound = Math.max(1000, Math.ceil(Math.abs(metric.value) / 1000) * 1000);
+  const axis = metric.cashAxis;
+  if (!axis) return null;
   const zeroX = 160;
-  const valueX = zeroX + (metric.value / bound) * 100;
-  const isNegative = metric.value < 0;
 
   return (
     <>
@@ -109,42 +96,42 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
         viewBox="0 0 320 120"
         className="h-32 w-full"
         role="img"
-        aria-label={`Monthly cash flow is ${formatUSD(metric.value)} on an axis from negative ${formatUSD(bound)} to positive ${formatUSD(bound)}`}
+        aria-label={`Monthly cash flow is ${formatCurrency(metric.value)} on an axis from negative ${formatCurrency(axis.bound)} to positive ${formatCurrency(axis.bound)}`}
       >
         <line x1={zeroX} y1={20} x2={zeroX} y2={84} stroke="var(--muted-foreground)" strokeWidth={1.5} />
         <rect
-          x={Math.min(zeroX, valueX)}
+          x={axis.barX}
           y={32}
-          width={Math.abs(valueX - zeroX)}
+          width={axis.barWidth}
           height={22}
           rx={4}
-          fill={isNegative ? "var(--risk)" : "var(--good)"}
+          fill={axis.tone === "bad" ? "var(--risk)" : "var(--good)"}
         />
         <text
-          x={isNegative ? valueX - 8 : valueX + 8}
+          x={axis.labelX}
           y={43}
           dominantBaseline="middle"
-          textAnchor={isNegative ? "end" : "start"}
+          textAnchor={axis.negative ? "end" : "start"}
           fill="var(--foreground)"
           fontFamily="var(--font-serif)"
           fontSize={16}
           fontWeight={600}
         >
-          {formatUSD(metric.value)}
+          {formatCurrency(metric.value)}
         </text>
         <line x1={30} y1={84} x2={290} y2={84} stroke="var(--subtle-foreground)" strokeOpacity={0.5} />
-        {[-bound, 0, bound].map((tick, index) => (
-          <g key={tick}>
-            <line x1={60 + index * 100} y1={80} x2={60 + index * 100} y2={88} stroke="var(--border)" />
+        {axis.ticks.map((tick) => (
+          <g key={tick.x}>
+            <line x1={tick.x} y1={80} x2={tick.x} y2={88} stroke="var(--border)" />
             <text
-              x={60 + index * 100}
+              x={tick.x}
               y={105}
               textAnchor="middle"
               fill="var(--muted-foreground)"
               fontFamily="var(--font-serif)"
               fontSize={13}
             >
-              {cashFlowAxisLabel(tick)}
+              {tick.label}
             </text>
           </g>
         ))}

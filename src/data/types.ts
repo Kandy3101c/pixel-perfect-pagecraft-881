@@ -52,6 +52,16 @@ export interface Account {
   monthlyPayment?: number;
   creditLimit?: number;
   nickname?: string;
+  change12m: number;
+  changeMagnitude: number;
+  changeDirection: "up" | "down";
+  changeTone: "good" | "bad" | "neutral";
+  utilization?: number;
+  overLimit?: boolean;
+  usageWidth?: string;
+  usagePercent?: number;
+  usageTone?: "good" | "bad";
+  limitWidth?: string;
 }
 
 export type Institution = { id: string; name: string; source: "pnc" | "plaid"; status: "synced" | "syncing" | "needs_reauth" | "error"; lastSynced: string };
@@ -62,8 +72,10 @@ export type AccountDetail = {
   type: string;
   label: string;
   history: number[];
-  recent: { date: string; label: string; amount: number }[];
-  payoff?: { months: number; totalInterest: number; assumption: string };
+  chart: { month: string; balance: number }[];
+  coachReply: CoachReply;
+  recent: { date: string; label: string; amount: number; displayValue: number; incoming: boolean; displayLabel: string }[];
+  payoff?: { years: number; months: number; totalInterest: number; assumption: string };
 };
 
 export interface MonthlyRecord {
@@ -73,9 +85,12 @@ export interface MonthlyRecord {
   debtCosts: number;
   creditCardBalance: number;
   savingsBalance: number;
+  debtToIncome: number | null;
+  cashFlow: number;
 }
 
-export type SpendingByCategory = Record<string, number>;
+export type SpendingByCategory = { category: string; label: string; amount: number }[];
+export type AccountsSummary = { totalAssets: number; totalDebts: number; totalMonthlyDebtPayments: number };
 
 export type ChatMessage = {
   id: string;
@@ -98,6 +113,10 @@ export interface Metric {
   status: MetricStatus;
   target: string;
   explanation: string;
+  goalProgress?: number;
+  ringOffset?: number;
+  pieData?: { name: string; value: number }[];
+  cashAxis?: { bound: number; barX: number; barWidth: number; labelX: number; negative: boolean; tone: "good" | "bad"; ticks: { x: number; label: string }[] };
 }
 
 export type AlertSeverity = "critical" | "warning" | "info";

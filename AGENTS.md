@@ -31,11 +31,12 @@ use the editor.
 
 - SessionProvider owns the local demo session, connected items, and saved alert settings; AppShell guards every screen except Sign-in, and shared-store reset events keep customer switches and demo resets synchronized without a backend.
 - Settings and all bank-entry points reuse the same simulated connection dialog and data-access functions, so replacing the mock backend later does not change presentation boundaries.
-- Health-metric popup history receives the dashboard's monthly records as props and uses a dedicated chart with a pure ratio helper, keeping its time frame aligned with the dashboard and its calculations testable.
+- Health-metric charts receive finished chronological monthly ratios and visual measurements from data-access hooks; no frontend ratio or goal calculations, so backend fields remain authoritative.
 - Coach replies go through sendCoachMessage in the data-access layer; the page holds transient conversation state so a future backend swap changes only the reply boundary.
 - Alert-to-Coach navigation uses optional validated alertId search state and shared alert cards so all entry points send the same context-aware question.
 - AlertsProvider owns transient app-wide alert state; all alert consumers use useAlertsStore, while useAlerts is only the initial data boundary, preventing divergent unread counts.
 - Demo alert fixtures have stable event IDs shared with mock Coach replies; used demo IDs survive dismissal until reset so presentation events cannot be duplicated.
 - AccountsProvider exposes one shared in-memory account store including bank selection; account-facing data hooks and Coach account replies filter through that selection while useAllAccounts remains unfiltered, so navigation and cross-page updates stay consistent. Details match by unique account ID.
-- Pure account helpers prepare totals, changes, payoff years, activity signs, and per-account credit usage so presentation components never calculate financial values.
+- Mock backend fixtures contain finished summaries, changes, tones, utilization, payoff years, activity signs, and chart coordinates; data-access hooks select/join them without arithmetic so a real backend can replace fixtures.
+- All financial and date display formatting lives in src/lib/format.ts; presentation helpers only join supplied fields and format text.
 - Account-to-Coach navigation uses optional validated account search state and sends its question through the existing reply boundary, keeping chat behavior shared with alert entry points.
