@@ -1,16 +1,5 @@
 import { Info } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  Cell,
-  LabelList,
-  Pie,
-  PieChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 import type { Metric } from "@/data/types";
 import { formatPct, formatUSD } from "@/lib/format";
 import { goalProgress } from "@/lib/goals";
@@ -24,8 +13,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-
-const axisTick = { fontSize: 11, fill: "var(--muted-foreground)" };
 
 function metricValue(metric: Metric) {
   if (metric.unit === "percent") return formatPct(metric.value);
@@ -110,46 +97,54 @@ function cashFlowAxisLabel(value: number) {
 
 function CashFlowVisual({ metric }: { metric: Metric }) {
   const bound = Math.max(1000, Math.ceil(Math.abs(metric.value) / 1000) * 1000);
-  const data = [{ name: "Cash flow", value: metric.value, valueLabel: formatUSD(metric.value) }];
+  const zeroX = 160;
+  const valueX = zeroX + (metric.value / bound) * 100;
+  const isNegative = metric.value < 0;
 
   return (
     <>
-      <div
+      <svg
+        viewBox="0 0 320 120"
         className="h-32 w-full"
         role="img"
         aria-label={`Monthly cash flow is ${formatUSD(metric.value)} on an axis from negative ${formatUSD(bound)} to positive ${formatUSD(bound)}`}
       >
-        <ResponsiveContainer>
-          <BarChart data={data} layout="vertical" margin={{ top: 26, right: 58, bottom: 0, left: 58 }}>
-            <XAxis
-              type="number"
-              domain={[-bound, bound]}
-              ticks={[-bound, 0, bound]}
-              tickFormatter={cashFlowAxisLabel}
-              tick={axisTick}
-              axisLine={{ stroke: "var(--border)" }}
-              tickLine={false}
-            />
-            <YAxis type="category" dataKey="name" hide />
-            <ReferenceLine x={0} stroke="var(--muted-foreground)" />
-            <Bar
-              dataKey="value"
-              fill={STATUS[metric.status].stroke}
-              radius={4}
-              maxBarSize={22}
-              isAnimationActive={false}
+        <line x1={zeroX} y1={20} x2={zeroX} y2={84} stroke="var(--muted-foreground)" />
+        <rect
+          x={Math.min(zeroX, valueX)}
+          y={32}
+          width={Math.abs(valueX - zeroX)}
+          height={22}
+          rx={4}
+          fill={STATUS[metric.status].stroke}
+        />
+        <text
+          x={isNegative ? valueX - 8 : valueX + 8}
+          y={43}
+          dominantBaseline="middle"
+          textAnchor={isNegative ? "end" : "start"}
+          fill="var(--foreground)"
+          fontSize={13}
+          fontWeight={700}
+        >
+          {formatUSD(metric.value)}
+        </text>
+        <line x1={30} y1={84} x2={290} y2={84} stroke="var(--border)" />
+        {[-bound, 0, bound].map((tick, index) => (
+          <g key={tick}>
+            <line x1={60 + index * 100} y1={80} x2={60 + index * 100} y2={88} stroke="var(--border)" />
+            <text
+              x={60 + index * 100}
+              y={105}
+              textAnchor="middle"
+              fill="var(--muted-foreground)"
+              fontSize={11}
             >
-              <LabelList
-                dataKey="valueLabel"
-                position={metric.value < 0 ? "left" : "right"}
-                fill="var(--foreground)"
-                fontSize={13}
-                fontWeight={700}
-              />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+              {cashFlowAxisLabel(tick)}
+            </text>
+          </g>
+        ))}
+      </svg>
       <StatusPill status={metric.status} />
       <p className="text-xs font-medium text-muted-foreground">Target: {metric.target}</p>
     </>
