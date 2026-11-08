@@ -7,7 +7,9 @@ import {
 } from "recharts";
 import { useAccounts, useAlerts, useCustomer, useMetrics, useMonthly } from "@/data/api";
 import type { Metric } from "@/data/types";
-import { SEVERITY, StatusPill } from "@/components/Status";
+import { SEVERITY, STATUS, StatusPill } from "@/components/Status";
+import { ProgressRing } from "@/components/ProgressRing";
+import { goalProgress } from "@/lib/goals";
 import { formatDate, formatMonth, formatPct, formatUSD, humanize } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -87,15 +89,35 @@ function Dashboard() {
       })()}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((m) => (
-          <Card key={m.id} className="flex flex-col gap-3">
-            <p className="text-sm font-medium text-muted-foreground">{m.label}</p>
-            <p className="text-3xl font-bold tracking-tight">{metricValue(m)}</p>
-            <div><StatusPill status={m.status} /></div>
-            <p className="text-xs font-medium text-muted-foreground">Target: {m.target}</p>
-            <p className="text-sm leading-relaxed">{m.explanation}</p>
-          </Card>
-        ))}
+        {metrics.map((m, i) => {
+          const progress = i === 0 ? goalProgress(m.value, m.unit, m.target) : null;
+
+          if (progress === null) {
+            return (
+              <Card key={m.id} className="flex flex-col gap-3">
+                <p className="text-sm font-medium text-muted-foreground">{m.label}</p>
+                <p className="text-3xl font-bold tracking-tight">{metricValue(m)}</p>
+                <div><StatusPill status={m.status} /></div>
+                <p className="text-xs font-medium text-muted-foreground">Target: {m.target}</p>
+                <p className="text-sm leading-relaxed">{m.explanation}</p>
+              </Card>
+            );
+          }
+
+          return (
+            <Card key={m.id} className="flex flex-col items-center gap-3 text-center">
+              <p className="text-sm font-medium text-muted-foreground">{m.label}</p>
+              <ProgressRing progress={progress} color={STATUS[m.status].stroke}>
+                <span className="text-2xl font-bold tabular-nums">{m.value}</span>
+                <span className="text-xs text-muted-foreground">{m.unit}</span>
+              </ProgressRing>
+              <p className="text-sm font-semibold">{formatPct(progress)} of your goal</p>
+              <StatusPill status={m.status} />
+              <p className="text-xs font-medium text-muted-foreground">Target: {m.target}</p>
+              <p className="text-sm leading-relaxed">{m.explanation}</p>
+            </Card>
+          );
+        })}
       </div>
 
       <Card title="Money in vs. money out">
