@@ -10,14 +10,21 @@ export interface Customer {
 }
 
 export interface Account {
+  id: string;
+  institutionId: string;
   type: AccountType;
   balance: number;
   yield?: number;
   apr?: number;
   monthlyPayment?: number;
+  creditLimit?: number;
 }
 
+export type Institution = { id: string; name: string; source: "pnc" | "plaid"; status: "synced" | "syncing" | "needs_reauth" | "error"; lastSynced: string };
+
 export type AccountDetail = {
+  id: string;
+  institutionId: string;
   type: string;
   label: string;
   history: number[];
