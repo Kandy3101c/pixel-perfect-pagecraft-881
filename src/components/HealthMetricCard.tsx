@@ -26,12 +26,12 @@ function EmergencyFundVisual({ metric }: { metric: Metric }) {
   return (
     <>
       <ProgressRing progress={progress} color={STATUS[metric.status].stroke}>
-        <span className="text-2xl font-bold tabular-nums">{metric.value}</span>
-        <span className="text-xs text-muted-foreground">{metric.unit}</span>
+        <span className="font-serif text-3xl font-semibold tabular-nums">{metric.value}</span>
+        <span className="font-serif text-sm text-muted-foreground">{metric.unit}</span>
       </ProgressRing>
-      <p className="text-sm font-semibold">{formatPct(progress)} of your goal</p>
+      <p className="font-serif text-base font-semibold">{formatPct(progress)} of your goal</p>
       <StatusPill status={metric.status} />
-      <p className="text-xs font-medium text-muted-foreground">Target: {metric.target}</p>
+      <p className="font-serif text-sm font-medium text-muted-foreground">Target: {metric.target}</p>
     </>
   );
 }
@@ -69,21 +69,21 @@ function DebtToIncomeVisual({ metric }: { metric: Metric }) {
         </ResponsiveContainer>
         <div className="pointer-events-none absolute inset-0 grid place-items-center text-center leading-tight">
           <div>
-            <p className="text-2xl font-bold tabular-nums">{formatPct(metric.value)}</p>
-            <p className="text-[11px] text-muted-foreground">of income</p>
+            <p className="font-serif text-3xl font-semibold tabular-nums">{formatPct(metric.value)}</p>
+            <p className="font-serif text-xs text-muted-foreground">of income</p>
           </div>
         </div>
       </div>
       <StatusPill status={metric.status} />
-      <p className="text-xs font-medium text-muted-foreground">Target: {metric.target}</p>
+      <p className="font-serif text-sm font-medium text-muted-foreground">Target: {metric.target}</p>
     </>
   );
 }
 
 function CreditUseVisual({ metric }: { metric: Metric }) {
   return (
-    <div className="flex w-full flex-1 items-center justify-center gap-3 whitespace-nowrap">
-      <p className="text-3xl font-bold tracking-tight tabular-nums">{formatPct(metric.value)}</p>
+    <div className="flex w-full flex-1 flex-col items-center justify-center gap-3 whitespace-nowrap">
+      <p className="font-serif text-4xl font-semibold tracking-tight tabular-nums">{formatPct(metric.value)}</p>
       <StatusPill status={metric.status} />
     </div>
   );
@@ -124,8 +124,9 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
           dominantBaseline="middle"
           textAnchor={isNegative ? "end" : "start"}
           fill="var(--foreground)"
-          fontSize={13}
-          fontWeight={700}
+          fontFamily="var(--font-serif)"
+          fontSize={16}
+          fontWeight={600}
         >
           {formatUSD(metric.value)}
         </text>
@@ -138,7 +139,8 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
               y={105}
               textAnchor="middle"
               fill="var(--muted-foreground)"
-              fontSize={11}
+              fontFamily="var(--font-serif)"
+              fontSize={13}
             >
               {cashFlowAxisLabel(tick)}
             </text>
@@ -146,7 +148,7 @@ function CashFlowVisual({ metric }: { metric: Metric }) {
         ))}
       </svg>
       <StatusPill status={metric.status} />
-      <p className="text-xs font-medium text-muted-foreground">Target: {metric.target}</p>
+      <p className="font-serif text-sm font-medium text-muted-foreground">Target: {metric.target}</p>
     </>
   );
 }
@@ -164,9 +166,9 @@ function MetricVisual({ metric }: { metric: Metric }) {
     default:
       return (
         <div className="flex flex-1 flex-col items-center justify-center gap-3">
-          <p className="text-3xl font-bold tracking-tight">{metricValue(metric)}</p>
+          <p className="font-serif text-4xl font-semibold tracking-tight tabular-nums">{metricValue(metric)}</p>
           <StatusPill status={metric.status} />
-          <p className="text-xs font-medium text-muted-foreground">Target: {metric.target}</p>
+          <p className="font-serif text-sm font-medium text-muted-foreground">Target: {metric.target}</p>
         </div>
       );
   }
@@ -181,7 +183,7 @@ export function HealthMetricCard({ metric }: { metric: Metric }) {
           aria-label={`${metric.label}: ${metricValue(metric)}. View details`}
           className="flex min-h-64 w-full cursor-pointer flex-col items-center gap-3 rounded-2xl border bg-card p-5 text-center shadow-soft transition-colors hover:border-primary/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:p-6"
         >
-          <span className="flex w-full items-center justify-between gap-2 text-sm font-medium text-muted-foreground">
+          <span className="flex w-full items-center justify-center gap-2 text-center font-serif text-base font-medium text-muted-foreground">
             <span>{metric.label}</span>
             <Info className="h-4 w-4 shrink-0 text-subtle-foreground" aria-hidden="true" />
           </span>
@@ -189,23 +191,23 @@ export function HealthMetricCard({ metric }: { metric: Metric }) {
         </button>
       </DialogTrigger>
       <DialogContent className="rounded-2xl">
-        <DialogHeader>
-          <div className="mb-1 flex justify-center sm:justify-start">
+        <DialogHeader className="text-center sm:text-center">
+          <div className="mb-1 flex justify-center">
             <StatusPill status={metric.status} />
           </div>
-          <DialogTitle>{metric.label}</DialogTitle>
+          <DialogTitle className="font-serif text-xl">{metric.label}</DialogTitle>
           <DialogDescription className="pt-2 text-base leading-relaxed text-foreground">
             {metric.explanation}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid grid-cols-2 gap-4 rounded-xl bg-muted p-4">
+        <div className="grid grid-cols-2 gap-4 rounded-xl bg-muted p-4 text-center">
           <div>
             <p className="text-xs font-medium text-muted-foreground">Current</p>
-            <p className="mt-1 text-xl font-bold tabular-nums">{metricValue(metric)}</p>
+            <p className="mt-1 font-serif text-2xl font-semibold tabular-nums">{metricValue(metric)}</p>
           </div>
           <div>
             <p className="text-xs font-medium text-muted-foreground">Target</p>
-            <p className="mt-1 font-semibold">{metric.target}</p>
+            <p className="mt-1 font-serif text-lg font-semibold">{metric.target}</p>
           </div>
         </div>
       </DialogContent>
