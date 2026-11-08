@@ -61,6 +61,9 @@ export interface Alert {
   suggestedAction: string;
   date: string;
   read: boolean;
+  metricId?: string;
+  channels?: ("app" | "imessage")[];
+  isDemo?: boolean;
 }
 
 export interface MockData {

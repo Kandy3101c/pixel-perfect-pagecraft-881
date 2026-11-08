@@ -1,6 +1,7 @@
 // Data access layer. Components must read data only through these hooks.
 // Swap the internals for real API calls later; signatures stay the same.
 import { mockData } from "./mock";
+import { createDemoAlert, demoEvents } from "./demoAlerts";
 import type { Account, Alert, ChatMessage, CoachReply, Customer, Metric, MonthlyRecord, SpendingByCategory } from "./types";
 
 export function useCustomer(): Customer {
@@ -23,6 +24,11 @@ export function useAlerts(): Alert[] {
   return mockData.alerts;
 }
 
+export async function injectDemoEvent(eventType: string): Promise<Alert> {
+  await new Promise<void>((resolve) => setTimeout(resolve, 800));
+  return createDemoAlert(eventType, new Date().toISOString().slice(0, 10));
+}
+
 // Single replacement boundary for a future backend /api/chat call.
 // Demo verification flags belong to these fixtures; no live verification runs here.
 export async function sendCoachMessage(
@@ -35,9 +41,10 @@ export async function sendCoachMessage(
   const text = message.toLowerCase();
   // Alert context takes precedence over words occurring in an alert's title.
   if (text.includes("explain this alert")) {
+    const availableAlerts = [...mockData.alerts, ...demoEvents.map((event) => createDemoAlert(event.type, ""))];
     const alert = context?.alertId
-      ? mockData.alerts.find((a) => a.id === context.alertId)
-      : mockData.alerts.find((a) => text.includes(a.title.toLowerCase()));
+      ? availableAlerts.find((a) => a.id === context.alertId)
+      : availableAlerts.find((a) => text.includes(a.title.toLowerCase()));
     if (alert) return { reply: `${alert.reason} ${alert.suggestedAction}`, sources: ["Alerts"], verified: true };
   } else if (text.includes("credit") && /red|use|utilization/.test(text)) {
     return {

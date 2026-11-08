@@ -35,8 +35,8 @@ export const mockData: MockData = {
     { id: "monthly_cash_flow", label: "Monthly cash flow", value: -1153, unit: "dollars", status: "risk", target: "positive", explanation: "On average, spending plus debt payments are about $1,150 more than income each month." },
   ],
   alerts: [
-    { id: "a1", severity: "critical", title: "Card is over its limit", reason: "Balance $9,971 vs. limit $5,332.", suggestedAction: "Pay down the card before adding new purchases.", date: "2026-10-31", read: false },
-    { id: "a2", severity: "warning", title: "Card balance rose 12 months in a row", reason: "Up from $9,880 to $9,971 since last November.", suggestedAction: "Paying $50 more per month would start shrinking it.", date: "2026-10-31", read: false },
-    { id: "a3", severity: "info", title: "You paid $30 in fees this year", reason: "Card and loan servicing fees.", suggestedAction: "Ask the coach which fees can be avoided.", date: "2026-10-15", read: true },
+    { id: "a1", severity: "critical", title: "Card is over its limit", reason: "Balance $9,971 vs. limit $5,332.", suggestedAction: "Pay down the card before adding new purchases.", date: "2026-10-31", read: false, metricId: "credit_utilization", channels: ["app", "imessage"] },
+    { id: "a2", severity: "warning", title: "Card balance rose 12 months in a row", reason: "Up from $9,880 to $9,971 since last November.", suggestedAction: "Paying $50 more per month would start shrinking it.", date: "2026-10-31", read: false, metricId: "credit_utilization", channels: ["app", "imessage"] },
+    { id: "a3", severity: "info", title: "You paid $30 in fees this year", reason: "Card and loan servicing fees.", suggestedAction: "Ask the coach which fees can be avoided.", date: "2026-10-15", read: true, channels: ["app"] },
   ],
 };
