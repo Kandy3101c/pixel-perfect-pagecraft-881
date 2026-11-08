@@ -5,8 +5,8 @@ import type { Account, AccountDetail, Institution } from "./types";
 
 export type AccountChange = { institution: Institution; addedAccountIds: string[] };
 export function createAccountsStore() {
-  const initial = { institutions: [pncInstitution], accounts: mockData.accounts, details: accountDetails };
-  let state: { institutions: Institution[]; accounts: Account[]; details: AccountDetail[] } = initial;
+  const initial = { institutions: [pncInstitution], accounts: mockData.accounts, details: accountDetails, selectedInstitutionId: "all" };
+  let state: { institutions: Institution[]; accounts: Account[]; details: AccountDetail[]; selectedInstitutionId: string } = initial;
   const listeners = new Set<() => void>();
   const changes = new Set<(change: AccountChange) => void>();
   const pending = new Map<string, Promise<void>>();
@@ -22,7 +22,7 @@ export function createAccountsStore() {
       if (!state.institutions.some((item) => item.id === institution.id)) { pending.delete(institution.id); resolve(); return; }
       const added = accounts.filter((account) => !state.accounts.some((item) => item.id === account.id));
       const synced: Institution = { ...institution, status: "synced", lastSynced: new Date().toISOString() };
-      state = { institutions: state.institutions.map((item) => item.id === institution.id ? synced : item), accounts: [...state.accounts, ...added], details: [...state.details, ...details.filter((detail) => !state.details.some((item) => item.id === detail.id))] };
+      state = { ...state, institutions: state.institutions.map((item) => item.id === institution.id ? synced : item), accounts: [...state.accounts, ...added], details: [...state.details, ...details.filter((detail) => !state.details.some((item) => item.id === detail.id))] };
       pending.delete(institution.id);
       publish();
       changes.forEach((callback) => callback({ institution: synced, addedAccountIds: added.map((item) => item.id) }));
@@ -37,8 +37,13 @@ export function createAccountsStore() {
     subscribe(callback: () => void) { listeners.add(callback); return () => { listeners.delete(callback); }; },
     subscribeToAccountChanges(callback: (change: AccountChange) => void) { changes.add(callback); return () => { changes.delete(callback); }; },
     connectBank: () => sync(platypusInstitution, platypusAccounts, platypusDetails),
+    selectInstitution(id: string) {
+      if (id !== "all" && !state.institutions.some((item) => item.id === id)) return;
+      if (state.selectedInstitutionId === id) return;
+      state = { ...state, selectedInstitutionId: id }; publish();
+    },
     reconnectBank(id: string) { return id === pncInstitution.id ? sync(pncInstitution, mockData.accounts, accountDetails) : sync(platypusInstitution, platypusAccounts, platypusDetails); },
-    disconnectBank(id: string) { state = { institutions: state.institutions.filter((item) => item.id !== id), accounts: state.accounts.filter((item) => item.institutionId !== id), details: state.details.filter((item) => item.institutionId !== id) }; publish(); },
+    disconnectBank(id: string) { state = { selectedInstitutionId: state.selectedInstitutionId === id ? "all" : state.selectedInstitutionId, institutions: state.institutions.filter((item) => item.id !== id), accounts: state.accounts.filter((item) => item.institutionId !== id), details: state.details.filter((item) => item.institutionId !== id) }; publish(); },
   };
 }
 export const accountsStore = createAccountsStore();

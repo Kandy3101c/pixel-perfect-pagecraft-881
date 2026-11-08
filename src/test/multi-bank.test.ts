@@ -1,10 +1,38 @@
 import { afterEach, expect, it, vi } from "vitest";
 import { createAccountsStore } from "@/data/accountsStore";
-import { getAccountDetails } from "@/data/api";
+import { getAccountDetails, selectedAccounts } from "@/data/api";
 import { mockData } from "@/data/mock";
 import { accountSummary } from "@/lib/accounts";
 
 afterEach(() => vi.useRealTimers());
+it("shares the selected bank with every account read and preserves it through sync", async () => {
+  vi.useFakeTimers();
+  const store = createAccountsStore();
+  expect(store.getSnapshot().selectedInstitutionId).toBe("all");
+  store.selectInstitution("inst_pnc");
+  const connect = store.connectBank();
+  await vi.advanceTimersByTimeAsync(2000); await connect;
+  expect(store.getSnapshot().selectedInstitutionId).toBe("inst_pnc");
+  expect(selectedAccounts(store.getSnapshot())).toHaveLength(7);
+  store.selectInstitution("inst_platypus");
+  expect(selectedAccounts(store.getSnapshot()).map((item) => item.id)).toEqual(["acct_plat_savings", "acct_plat_card"]);
+  expect(accountSummary(selectedAccounts(store.getSnapshot()))).toEqual({ assets: 21131.81, debts: 6667.18, monthlyPayments: 200.02 });
+  expect(store.getSnapshot().accounts).toHaveLength(9);
+  store.selectInstitution("all");
+  expect(selectedAccounts(store.getSnapshot())).toHaveLength(9);
+});
+it("rejects unknown banks and returns to all banks when the selected bank is disconnected", async () => {
+  vi.useFakeTimers(); const store = createAccountsStore();
+  store.selectInstitution("unknown");
+  expect(store.getSnapshot().selectedInstitutionId).toBe("all");
+  const connect = store.connectBank(); await vi.advanceTimersByTimeAsync(2000); await connect;
+  store.selectInstitution("inst_platypus");
+  store.disconnectBank("inst_pnc");
+  expect(store.getSnapshot().selectedInstitutionId).toBe("inst_platypus");
+  store.disconnectBank("inst_platypus");
+  expect(store.getSnapshot().selectedInstitutionId).toBe("all");
+  expect(selectedAccounts(store.getSnapshot())).toEqual([]);
+});
 it("starts with only PNC and seven unique supplied account IDs", () => {
   const state = createAccountsStore().getSnapshot();
   expect(state.institutions).toEqual([{ id: "inst_pnc", name: "PNC Bank", source: "pnc", status: "synced", lastSynced: "2026-10-31T09:00:00" }]);

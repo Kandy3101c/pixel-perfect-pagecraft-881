@@ -5,7 +5,7 @@ import { AccountCard } from "@/components/AccountCard";
 import { AccountDetail } from "@/components/AccountDetail";
 import { LinkedBanks } from "@/components/LinkedBanks";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { subscribeToAccountChanges, useAccountDetails, useInstitutions } from "@/data/api";
+import { selectInstitution, subscribeToAccountChanges, useAccountDetails, useInstitutions, useSelectedInstitution } from "@/data/api";
 import { accountSummary } from "@/lib/accounts";
 import { formatUSD } from "@/lib/format";
 
@@ -26,9 +26,8 @@ export const Route = createFileRoute("/accounts")({
 function Accounts() {
   const accounts = useAccountDetails();
   const institutions = useInstitutions();
-  const [bank, setBank] = useState("all");
-  const activeBank = bank === "all" || institutions.some((item) => item.id === bank) ? bank : "all";
-  const filtered = accounts.filter((account) => activeBank === "all" || account.institutionId === activeBank);
+  const activeBank = useSelectedInstitution();
+  const filtered = accounts;
   const summary = accountSummary(filtered);
   const [selected, setSelected] = useState<string>();
   const [arrivals, setArrivals] = useState<string[]>([]);
@@ -47,7 +46,7 @@ function Accounts() {
     <header><div className="flex items-center gap-3"><h1 className="text-2xl font-bold">Accounts</h1><span className="flex items-center gap-1.5 text-xs font-semibold text-good"><span className="h-2 w-2 rounded-full bg-good motion-safe:animate-pulse" />Live</span></div><p className="mt-1 text-sm text-muted-foreground">Everything you have and owe, in one place.</p></header>
     <LinkedBanks institutions={institutions} />
     <section aria-label="Account summary">
-      <ToggleGroup type="single" value={activeBank} onValueChange={(value) => { if (value) setBank(value); }} aria-label="Select bank" className="mb-4 w-fit max-w-full flex-wrap justify-start rounded-lg bg-card p-1">
+      <ToggleGroup type="single" value={activeBank} onValueChange={(value) => { if (value) selectInstitution(value); }} aria-label="Select bank" className="mb-4 w-fit max-w-full flex-wrap justify-start rounded-lg bg-card p-1">
         {[{ id: "all", name: "All banks" }, ...institutions].map((item) => <ToggleGroupItem key={item.id} value={item.id} className="h-auto min-h-9 whitespace-normal px-3 py-2 text-sm data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">{item.name}</ToggleGroupItem>)}
       </ToggleGroup>
       <div className="grid gap-3 sm:grid-cols-3">{[{ label: "What you have", value: summary.assets }, { label: "What you owe", value: summary.debts }, { label: "Monthly debt payments", value: summary.monthlyPayments }].map((stat) => <div key={stat.label} className="rounded-lg border bg-card px-4 py-5 text-center shadow-soft"><h2 className="text-sm font-semibold text-muted-foreground">{stat.label}</h2><p className="mt-2 font-serif text-3xl font-semibold">{formatUSD(stat.value)}</p></div>)}</div>
