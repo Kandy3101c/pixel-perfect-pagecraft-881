@@ -32,3 +32,5 @@ use the editor.
 - Health-metric popup history receives the dashboard's monthly records as props and uses a dedicated chart with a pure ratio helper, keeping its time frame aligned with the dashboard and its calculations testable.
 - Coach replies go through sendCoachMessage in the data-access layer; the page holds transient conversation state so a future backend swap changes only the reply boundary.
 - Alert-to-Coach navigation uses optional validated alertId search state and shared alert cards so all entry points send the same context-aware question.
+- AlertsProvider owns transient app-wide alert state; all alert consumers use useAlertsStore, while useAlerts is only the initial data boundary, preventing divergent unread counts.
+- Demo alert fixtures have stable event IDs shared with mock Coach replies; used demo IDs survive dismissal until reset so presentation events cannot be duplicated.
