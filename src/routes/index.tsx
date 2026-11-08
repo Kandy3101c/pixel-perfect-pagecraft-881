@@ -28,7 +28,7 @@ export const Route = createFileRoute("/")({
 const SEV_RANK = { critical: 0, warning: 1, info: 2 } as const;
 const tooltipStyle = { borderRadius: 12, border: "1px solid var(--border)", boxShadow: "var(--shadow-soft)" };
 const axisTick = { fontSize: 12, fill: "var(--muted-foreground)" };
-const kFmt = (v: number) => `$${(v / 1000).toFixed(0)}k`;
+const kFmt = (v: number) => `$${+(v / 1000).toFixed(1)}k`;
 
 function Card({ title, children, className }: { title?: string; children: ReactNode; className?: string }) {
   return (
@@ -107,9 +107,9 @@ function Dashboard() {
               <YAxis tickFormatter={kFmt} tick={axisTick} axisLine={false} tickLine={false} width={44} />
               <Tooltip formatter={(v: number) => formatUSD(v)} contentStyle={tooltipStyle} cursor={{ fill: "var(--muted)" }} />
               <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Bar dataKey="income" name="Income" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="spending" name="Spending" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="debtPayments" name="Debt payments" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="income" name="Income" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="spending" name="Spending" fill="var(--chart-2)" radius={[4, 4, 0, 0]} />
+              <Bar isAnimationActive={false} dataKey="debtPayments" name="Debt payments" fill="var(--chart-3)" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -126,7 +126,7 @@ function Dashboard() {
                 <Tooltip formatter={(v: number) => formatUSD(v)} contentStyle={tooltipStyle} />
                 <ReferenceLine y={customer.creditLimit} stroke="var(--risk)" strokeDasharray="6 4"
                   label={{ value: `Limit ${formatUSD(customer.creditLimit)}`, position: "insideBottomRight", fill: "var(--risk)", fontSize: 12 }} />
-                <Line type="monotone" dataKey="creditCardBalance" name="Card balance" stroke="var(--chart-1)" strokeWidth={2.5} dot={false} />
+                <Line isAnimationActive={false} type="monotone" dataKey="creditCardBalance" name="Card balance" stroke="var(--chart-1)" strokeWidth={2.5} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -139,7 +139,7 @@ function Dashboard() {
                 <XAxis type="number" tickFormatter={(v) => formatUSD(v)} tick={axisTick} axisLine={false} tickLine={false} />
                 <YAxis type="category" dataKey="name" tick={axisTick} axisLine={false} tickLine={false} width={80} />
                 <Tooltip formatter={(v: number) => formatUSD(v)} contentStyle={tooltipStyle} cursor={{ fill: "var(--muted)" }} />
-                <Bar dataKey="amount" name="Spent" fill="var(--chart-1)" radius={[0, 6, 6, 0]} />
+                <Bar isAnimationActive={false} dataKey="amount" name="Spent" fill="var(--chart-1)" radius={[0, 6, 6, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
