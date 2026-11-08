@@ -63,15 +63,16 @@ describe("Demo events", () => {
     expect(alert.reason).toContain(amount);
     expect(alert.reason).toContain(other);
     expect(alert.suggestedAction).toContain(action);
-    expect(alert).toMatchObject({ severity, metricId, date: "2026-11-08", channels: ["app", "imessage"], read: false, isDemo: true });
+    expect(alert).toMatchObject({ severity, metricId, date: "2026-11-08", channels: ["app"], read: false, isDemo: true });
   });
-  it("waits 800ms and supports Coach explanation of new alerts", async () => {
+  it("waits 800ms, gives the injected alert a unique ID, and supports Coach explanation", async () => {
     vi.useFakeTimers();
     try {
       let settled = false;
       const promise = injectDemoEvent("rate_increase").then((alert) => { settled = true; return alert; });
       await vi.advanceTimersByTimeAsync(799); expect(settled).toBe(false);
       await vi.advanceTimersByTimeAsync(1); const alert = await promise; expect(settled).toBe(true);
+      expect(alert.id).toMatch(/^demo-rate_increase-\d+$/);
       const reply = sendCoachMessage(`Explain this alert: ${alert.title}`, [], { alertId: alert.id });
       await vi.advanceTimersByTimeAsync(1200);
       expect((await reply).reply).toBe(`${alert.reason} ${alert.suggestedAction}`);
