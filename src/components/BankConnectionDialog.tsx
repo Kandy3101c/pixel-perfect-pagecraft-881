@@ -23,9 +23,10 @@ export function BankConnectionDialog({ trigger, bankSignIn = false, onDone }: { 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [itemId, setItemId] = useState("");
+  const [starting, setStarting] = useState(false);
 
   function reset() {
-    setStep("intro"); setSearch(""); setBankName(""); setUsername(""); setPassword(""); setItemId("");
+    setStep("intro"); setSearch(""); setBankName(""); setUsername(""); setPassword(""); setItemId(""); setStarting(false);
   }
   function changeOpen(next: boolean) {
     if (!next && step === "connecting") return;
@@ -33,9 +34,10 @@ export function BankConnectionDialog({ trigger, bankSignIn = false, onDone }: { 
     if (!next) reset();
   }
   async function begin() {
-    setStep("intro");
+    setStarting(true);
     try { await createLinkToken(); setStep("choose"); }
     catch { setStep("error"); }
+    finally { setStarting(false); }
   }
   async function submitCredentials(event: React.FormEvent) {
     event.preventDefault();
@@ -63,7 +65,7 @@ export function BankConnectionDialog({ trigger, bankSignIn = false, onDone }: { 
 
         {step === "intro" && <>
           <p className="text-sm leading-relaxed text-muted-foreground">In the real app, you'll sign in through Plaid's secure window. We never see your bank password.</p>
-          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => changeOpen(false)}>Cancel</Button><Button onClick={() => void begin()}>Continue</Button></div>
+          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => changeOpen(false)}>Cancel</Button><Button onClick={() => void begin()} disabled={starting}>{starting ? <><LoaderCircle className="motion-safe:animate-spin" />Starting…</> : "Continue"}</Button></div>
         </>}
 
         {step === "choose" && <div className="space-y-4">

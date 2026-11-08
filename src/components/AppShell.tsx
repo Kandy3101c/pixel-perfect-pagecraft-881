@@ -35,10 +35,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
         <header className="sticky top-0 z-10 flex h-16 items-center gap-3 border-b bg-card/90 px-4 backdrop-blur md:px-8">
-          <span className="flex items-center gap-2 font-bold text-primary md:hidden"><HeartPulse className="h-5 w-5" /> {APP_NAME}</span>
+          <span className="hidden items-center gap-2 font-bold text-primary min-[480px]:flex md:hidden"><HeartPulse className="h-5 w-5" /> {APP_NAME}</span>
           <span className="rounded-full bg-watch-soft px-2.5 py-0.5 text-xs font-semibold text-watch">{session.mode === "bank" ? "Connected bank" : "Demo data"}</span>
           <div className="ml-auto flex items-center gap-2 sm:gap-4">
-            <DropdownMenu><DropdownMenuTrigger className="hidden items-center gap-1 rounded-md px-2 py-1 text-sm text-muted-foreground hover:bg-muted sm:flex">{customer.name}<ChevronDown className="h-3.5 w-3.5" /></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem asChild><Link to="/settings">Switch dataset</Link></DropdownMenuItem><DropdownMenuItem onSelect={() => { signOut(); void navigate({ to: "/signin" }); }}><LogOut />Sign out</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
+            <DropdownMenu><DropdownMenuTrigger className="flex min-w-0 items-center gap-1 rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-muted sm:text-sm"><span className="max-w-24 truncate sm:max-w-none">{customer.name}</span><ChevronDown className="h-3.5 w-3.5 shrink-0" /></DropdownMenuTrigger><DropdownMenuContent align="end"><DropdownMenuItem asChild><Link to="/settings">Switch dataset</Link></DropdownMenuItem><DropdownMenuItem onSelect={() => { signOut(); void navigate({ to: "/signin" }); }}><LogOut />Sign out</DropdownMenuItem></DropdownMenuContent></DropdownMenu>
             <Link to="/alerts" className="relative rounded-full p-2 hover:bg-muted" aria-label={`${unread} unread alerts`}><Bell className="h-5 w-5 text-foreground" />{unread > 0 && <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-risk px-1 text-[11px] font-bold text-primary-foreground">{unread}</span>}</Link>
           </div>
         </header>
