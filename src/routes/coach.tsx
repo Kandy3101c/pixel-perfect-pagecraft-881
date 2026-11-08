@@ -31,7 +31,7 @@ const suggestions = [
   "How much of my income goes to debt?",
   "What if I pay $50 more on my card each month?",
 ];
-type DisplayMessage = ChatMessage & { verified?: boolean; failed?: boolean };
+type DisplayMessage = ChatMessage & { verified?: boolean; failed?: boolean; retry?: PendingRequest };
 type PendingRequest = { text: string; history: ChatMessage[]; context?: { alertId?: string } };
 
 function Coach() {
@@ -43,7 +43,6 @@ function Coach() {
   const [infoOpen, setInfoOpen] = useState(false);
   const busy = useRef(false);
   const lastAlert = useRef<string | undefined>(undefined);
-  const retryRequest = useRef<PendingRequest | undefined>(undefined);
   const end = useRef<HTMLDivElement>(null);
   const mounted = useRef(true);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
@@ -52,12 +51,11 @@ function Coach() {
     if (busy.current) return;
     busy.current = true;
     setWaiting(true);
-    retryRequest.current = request;
     try {
       const reply = await sendCoachMessage(request.text, request.history, request.context);
       if (mounted.current) setMessages((previous) => [...previous, { id: crypto.randomUUID(), role: "coach", text: reply.reply, sources: reply.sources, verified: reply.verified, createdAt: new Date().toISOString() }]);
     } catch {
-      if (mounted.current) setMessages((previous) => [...previous, { id: crypto.randomUUID(), role: "coach", text: "Sorry, I couldn't answer that right now. Please try again.", failed: true, createdAt: new Date().toISOString() }]);
+      if (mounted.current) setMessages((previous) => [...previous, { id: crypto.randomUUID(), role: "coach", text: "Sorry, I couldn't answer that right now. Please try again.", failed: true, retry: request, createdAt: new Date().toISOString() }]);
     } finally {
       busy.current = false;
       if (mounted.current) setWaiting(false);
@@ -116,7 +114,7 @@ function Coach() {
                 {(message.sources?.length ?? 0) > 0 && <div className="mt-3 flex flex-wrap gap-1.5">{message.sources?.map((source) => <span key={source} className="rounded-md bg-muted px-2 py-1 text-[11px] text-muted-foreground">{source}</span>)}</div>}
                 {message.verified && <span className="mt-3 inline-flex items-center gap-1 rounded-md bg-good-soft px-2 py-1 text-[11px] font-semibold text-good"><Check className="h-3 w-3" />Numbers checked</span>}
                 {message.failed && <Button variant="ghost" size="sm" className="mt-2" disabled={waiting} onClick={() => {
-                  const request = retryRequest.current;
+                  const request = message.retry;
                   if (!request || busy.current) return;
                   setMessages((previous) => previous.filter((item) => item.id !== message.id));
                   void requestReply(request);

@@ -1,8 +1,8 @@
 # Roadmap
 
-- [ ] Build Coach demo chat, sources, verification badges, waiting and retry states.
-- [ ] Add financial context panel and alert-to-Coach links, plus dashboard shortcut.
-- [ ] Test mock answers and verify desktop/mobile chat flows.
+- [x] Build Coach demo chat, sources, verification badges, waiting and retry states.
+- [x] Add financial context panel and alert-to-Coach links, plus dashboard shortcut.
+- [x] Test mock answers and verify desktop/mobile chat flows.
 
 - [x] Turn the debt-to-income health card into a pie chart.
 - [x] Make credit card usage a one-line value and status.
