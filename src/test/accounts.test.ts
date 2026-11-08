@@ -15,10 +15,10 @@ describe("Accounts demo", () => {
     for (const account of accounts) {
       expect(account.history).toEqual(accountDetails.find((item) => item.type === account.type)?.history);
       expect(account.chart).toHaveLength(12);
-      expect(account.chart[0].month).toBe("Nov 25");
-      expect(account.chart[11].month).toBe("Oct 26");
+      expect(account.chart[0]?.month).toBe("Nov 25");
+      expect(account.chart[11]?.month).toBe("Oct 26");
     }
-    expect(accounts[0].history).toEqual([7274,6600,6056,5004,6164,7028,6270,6113,6380,6560,5512,6123]);
+    expect(accounts[0]?.history).toEqual([7274,6600,6056,5004,6164,7028,6270,6113,6380,6560,5512,6123]);
   });
   it("shows credit purchases and interest as money out and payments as money in", () => {
     const credit = useAccountDetails().find((account) => account.type === "credit_card");
