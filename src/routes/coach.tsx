@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { CoachContext } from "@/components/CoachContext";
-import { sendCoachMessage, useAlerts } from "@/data/api";
+import { sendCoachMessage } from "@/data/api";
+import { useAlertsStore } from "@/data/alertsStore";
 import type { Alert, ChatMessage } from "@/data/types";
 import { cn } from "@/lib/utils";
 
@@ -36,7 +37,7 @@ type PendingRequest = { text: string; history: ChatMessage[]; context?: { alertI
 
 function Coach() {
   const { alertId } = Route.useSearch();
-  const alerts = useAlerts();
+  const { alerts } = useAlertsStore();
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [waiting, setWaiting] = useState(false);

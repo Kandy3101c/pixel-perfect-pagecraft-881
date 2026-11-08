@@ -1,12 +1,13 @@
 import { StatusPill } from "@/components/Status";
 import { CoachAlertCard } from "@/components/CoachAlertCard";
-import { useAlerts, useCustomer, useMetrics } from "@/data/api";
+import { useCustomer, useMetrics } from "@/data/api";
+import { useAlertsStore } from "@/data/alertsStore";
 import type { Alert } from "@/data/types";
 import { formatDate, formatPct, formatUSD } from "@/lib/format";
 
 export function CoachContext({ onAsk }: { onAsk: (alert: Alert) => void }) {
   const metrics = useMetrics();
-  const unread = useAlerts().filter((alert) => !alert.read);
+  const unread = useAlertsStore().alerts.filter((alert) => !alert.read);
   const customer = useCustomer();
   return (
     <div className="space-y-6">

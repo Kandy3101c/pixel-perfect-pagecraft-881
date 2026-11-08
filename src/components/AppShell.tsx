@@ -1,7 +1,8 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell, LayoutDashboard, Wallet, AlertTriangle, MessageCircle, Settings, HeartPulse } from "lucide-react";
 import type { ReactNode } from "react";
-import { useAlerts, useCustomer } from "@/data/api";
+import { useCustomer } from "@/data/api";
+import { useAlertsStore } from "@/data/alertsStore";
 import { cn } from "@/lib/utils";
 
 export const APP_NAME = "Steady";
@@ -17,7 +18,7 @@ const nav = [
 export function AppShell({ children }: { children: ReactNode }) {
   const path = useRouterState({ select: (r) => r.location.pathname });
   const customer = useCustomer();
-  const unread = useAlerts().filter((a) => !a.read).length;
+  const unread = useAlertsStore().alerts.filter((a) => !a.read).length;
 
   return (
     <div className="flex min-h-screen w-full bg-background">

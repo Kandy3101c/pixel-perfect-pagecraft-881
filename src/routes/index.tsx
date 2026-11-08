@@ -6,7 +6,8 @@ import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { useAccounts, useAlerts, useCustomer, useMetrics, useMonthly } from "@/data/api";
+import { useAccounts, useCustomer, useMetrics, useMonthly } from "@/data/api";
+import { useAlertsStore } from "@/data/alertsStore";
 import { SEVERITY } from "@/components/Status";
 import { HealthMetricCard } from "@/components/HealthMetricCard";
 import { formatDate, formatMonth, formatUSD, humanize } from "@/lib/format";
@@ -45,9 +46,9 @@ function Dashboard() {
   const accounts = useAccounts();
   const { months, spendingByCategoryLastMonth } = useMonthly();
   const metrics = useMetrics();
-  const alerts = useAlerts();
+  const { alerts } = useAlertsStore();
 
-  const topAlert = alerts.filter((a) => !a.read).sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity])[0];
+  const topAlert = alerts.filter((a) => !a.read).sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || b.date.localeCompare(a.date))[0];
   const monthData = months.map((m) => ({ ...m, label: formatMonth(m.month) }));
   const categories = Object.entries(spendingByCategoryLastMonth)
     .map(([k, v]) => ({ name: humanize(k), amount: v }))
