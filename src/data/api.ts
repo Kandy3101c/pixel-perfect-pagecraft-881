@@ -113,17 +113,60 @@ export async function exchangePublicToken(publicToken: string, institutionName: 
   await new Promise<void>((resolve) => setTimeout(resolve, 1500));
   return { itemId: `item-mock-${Math.random().toString(36).slice(2)}`, institutionId: "inst_platypus" };
 }
-export async function sendTestAlert(phoneE164: string): Promise<void> {
-  void phoneE164;
-  await new Promise<void>((resolve) => setTimeout(resolve, 1200));
+async function postNotifier(path: string, body: unknown, networkMessage: string): Promise<Response> {
+  let response: Response;
+  try {
+    response = await fetch(`${NOTIFIER_URL}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error(networkMessage);
+  }
+  if (!response.ok) {
+    let message = networkMessage;
+    try {
+      const data = await response.json() as { error?: unknown };
+      if (typeof data.error === "string" && data.error) message = data.error;
+    } catch {
+      // Use the clear fallback when the service returns no readable JSON error.
+    }
+    throw new Error(message);
+  }
+  return response;
 }
-export async function saveAlertSettings(settings: AlertSettings): Promise<void> {
-  await Promise.resolve();
+
+export async function sendTestAlert(phoneE164: string): Promise<void> {
+  await postNotifier("/api/alerts/test", { phoneE164 }, "Couldn't send the test alert. Is the alert service running?");
+}
+export async function saveAlertSettings(customerId: string, settings: AlertSettings): Promise<void> {
+  const notifierSettings = {
+    phoneE164: settings.phoneE164,
+    consent: settings.consent,
+    imessageEnabled: settings.channels.imessage,
+    sendToPhone: settings.phoneSeverity === "critical_warning" ? "critical_and_warnings" : settings.phoneSeverity,
+    hideAmounts: settings.hideAmounts,
+    quietHours: settings.quietHours,
+    enabledTypes: Object.entries(settings.alertTypes).filter(([, enabled]) => enabled).map(([id]) => id),
+  };
+  await postNotifier("/api/alerts/settings", { customerId, settings: notifierSettings }, "Couldn't save alert settings. Is the alert service running?");
   sessionStore.saveAlertSettings(settings);
+}
+export async function notifyPhone(customerId: string, alert: Alert): Promise<{ sent: boolean; why?: string }> {
+  const response = await postNotifier("/api/alerts/notify", {
+    customerId,
+    alert: { id: alert.id, severity: alert.severity, title: alert.title, reason: alert.reason, suggestedAction: alert.suggestedAction },
+  }, "Alert service is offline. Alert shown in the app only.");
+  try {
+    return await response.json() as { sent: boolean; why?: string };
+  } catch {
+    throw new Error("Alert service returned an invalid response.");
+  }
 }
 export async function injectDemoEvent(eventType: string): Promise<Alert> {
   await new Promise<void>((resolve) => setTimeout(resolve, 800));
-  return createDemoAlert(eventType, new Date().toISOString().slice(0, 10));
+  return { ...createDemoAlert(eventType, new Date().toISOString().slice(0, 10)), id: `demo-${eventType}-${Date.now()}` };
 }
 
 // Single replacement boundary for a future backend /api/chat call.
@@ -136,7 +179,8 @@ export async function sendCoachMessage(message: string, history: ChatMessage[], 
   if (account) return account.coachReply;
   if (text.includes("explain this alert")) {
     const availableAlerts = [...mockData.alerts, ...demoEvents.map((event) => createDemoAlert(event.type, ""))];
-    const alert = context?.alertId ? availableAlerts.find((a) => a.id === context.alertId) : availableAlerts.find((a) => text.includes(a.title.toLowerCase()));
+    const contextId = context?.alertId;
+    const alert = contextId ? availableAlerts.find((a) => a.id === contextId || (a.isDemo && contextId.startsWith(`${a.id}-`))) : availableAlerts.find((a) => text.includes(a.title.toLowerCase()));
     if (alert) return { reply: `${alert.reason} ${alert.suggestedAction}`, sources: ["Alerts"], verified: true };
   } else if (text.includes("credit") && /red|use|utilization/.test(text)) {
     return mockCoachReplies[0];
