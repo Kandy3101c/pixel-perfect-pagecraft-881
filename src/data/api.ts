@@ -14,11 +14,15 @@ export function useAccounts(): Account[] {
   return mockData.accounts;
 }
 
-export function useAccountDetails() {
+function getAccountDetails() {
   return mockData.accounts.flatMap((account) => {
     const detail = accountDetails.find((item) => item.type === account.type);
     return detail ? [accountPresentation(account, detail, mockData.monthly, mockData.customer.creditLimit)] : [];
   });
+}
+
+export function useAccountDetails() {
+  return getAccountDetails();
 }
 
 export function useAccountSummary() {
@@ -56,7 +60,7 @@ export async function sendCoachMessage(
   void history;
   await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   const text = message.toLowerCase();
-  const account = useAccountDetails().find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
+  const account = getAccountDetails().find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
   if (account) return {
     reply: `Your ${account.label} balance is ${formatUSD(account.balance)}. ${account.rateLabel}. ${account.changeLabel}.${account.payoffLabel ? ` Payoff estimate: ${account.payoffLabel} ${account.payoff?.assumption}` : ""}`,
     sources: [`${account.label} account`, "12-month account history"], verified: true,
