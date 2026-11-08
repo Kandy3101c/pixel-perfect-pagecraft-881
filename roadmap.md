@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Share bank selection across pages and verify filtered Dashboard accounts and navigation retention.
+- [x] Share bank selection across pages and verify filtered Dashboard accounts and navigation retention.
 
 - [x] Share uniquely identified multi-bank accounts across pages with simulated connection and disconnect.
 - [x] Add linked-bank statuses, bank filtering, live arrivals, and per-card limits.
