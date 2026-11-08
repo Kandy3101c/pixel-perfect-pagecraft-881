@@ -47,14 +47,14 @@ export function selectInstitution(institutionId: string) { accountsStore.selectI
 export function useInstitutions() { return useAccountsStore().institutions; }
 export function useAllAccounts() { return useAccountsStore().accounts; }
 export function subscribeToAccountChanges(callback: (change: AccountChange) => void) { return accountsStore.subscribeToAccountChanges(callback); }
-let healthHighlightPending = false;
+let healthHighlightPending: string[] = [];
 export async function connectBank() {
   await accountsStore.connectBank();
-  healthHighlightPending = true;
+  healthHighlightPending = mockData.metricsAfterLinking.filter((metric) => mockData.metrics.find((base) => base.id === metric.id)?.status !== metric.status).map((metric) => metric.id);
 }
 export function consumeHealthHighlight() {
   const pending = healthHighlightPending;
-  healthHighlightPending = false;
+  healthHighlightPending = [];
   return pending;
 }
 export function disconnectBank(institutionId: string) { accountsStore.disconnectBank(institutionId); }

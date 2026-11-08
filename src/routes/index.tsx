@@ -6,7 +6,7 @@ import {
   Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ReferenceLine,
   ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts";
-import { useAccounts, useCustomer, useMetrics, useMonthly } from "@/data/api";
+import { consumeHealthHighlight, useAccounts, useCustomer, useInstitutions, useMetrics, useMonthly } from "@/data/api";
 import { useAlertsStore } from "@/data/alertsStore";
 import { SEVERITY } from "@/components/Status";
 import { HealthMetricCard } from "@/components/HealthMetricCard";
@@ -46,7 +46,18 @@ function Dashboard() {
   const accounts = useAccounts();
   const { months, spendingByCategoryLastMonth } = useMonthly();
   const metrics = useMetrics();
+  const institutions = useInstitutions();
+  const linked = institutions.some((bank) => bank.id === "inst_platypus" && bank.status === "synced");
+  const [highlighted, setHighlighted] = useState<string[]>([]);
   const { alerts } = useAlertsStore();
+  useEffect(() => {
+    if (!linked) { setHighlighted([]); return; }
+    const changed = consumeHealthHighlight();
+    if (!changed.length) return;
+    setHighlighted(changed);
+    const timer = setTimeout(() => setHighlighted([]), 2500);
+    return () => clearTimeout(timer);
+  }, [linked]);
 
   const topAlert = alerts.filter((a) => !a.read).sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || b.date.localeCompare(a.date))[0];
   const monthData = months.map((m) => ({ ...m, label: formatMonth(m.month) }));
@@ -87,7 +98,7 @@ function Dashboard() {
       })()}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {metrics.map((metric) => <HealthMetricCard key={metric.id} metric={metric} months={months} />)}
+        {metrics.map((metric) => <HealthMetricCard key={metric.id} metric={metric} months={months} highlight={highlighted.includes(metric.id)} />)}
       </div>
       </div>
 
