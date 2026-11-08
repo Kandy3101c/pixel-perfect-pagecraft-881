@@ -8,6 +8,8 @@ export const Route = createFileRoute("/settings")({
       { name: "description", content: "Settings in Steady, your personal financial health app." },
       { property: "og:title", content: "Settings — Steady" },
       { property: "og:description", content: "Settings in Steady, your personal financial health app." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
   component: () => <ComingSoon title="Settings" />,

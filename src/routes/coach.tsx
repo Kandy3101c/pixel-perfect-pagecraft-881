@@ -71,7 +71,7 @@ function Coach() {
     const history = messages.filter((message) => !message.failed);
     setMessages((previous) => [...previous, user]);
     setDraft("");
-    void requestReply({ text: trimmed, history, context });
+    void requestReply({ text: trimmed, history, ...(context ? { context } : {}) });
   }, [messages, requestReply]);
 
   useEffect(() => {
