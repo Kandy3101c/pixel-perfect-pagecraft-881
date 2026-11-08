@@ -8,7 +8,7 @@ import {
 import { useAccounts, useAlerts, useCustomer, useMetrics, useMonthly } from "@/data/api";
 import { SEVERITY } from "@/components/Status";
 import { HealthMetricCard } from "@/components/HealthMetricCard";
-import { formatDate, formatMonth, formatPct, formatUSD, humanize } from "@/lib/format";
+import { formatDate, formatMonth, formatUSD, humanize } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/")({
