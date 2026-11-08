@@ -39,7 +39,7 @@ export function createAccountsStore() {
 
   return {
     getSnapshot: () => state,
-    getServerSnapshot: initialState,
+    getServerSnapshot: () => serverSnapshot,
     subscribe(callback: () => void) { listeners.add(callback); return () => { listeners.delete(callback); }; },
     subscribeToAccountChanges(callback: (change: AccountChange) => void) { changes.add(callback); return () => { changes.delete(callback); }; },
     connectBank: () => sync(platypusInstitution, platypusAccounts, platypusDetails),
