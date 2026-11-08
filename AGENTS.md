@@ -34,3 +34,5 @@ use the editor.
 - Alert-to-Coach navigation uses optional validated alertId search state and shared alert cards so all entry points send the same context-aware question.
 - AlertsProvider owns transient app-wide alert state; all alert consumers use useAlertsStore, while useAlerts is only the initial data boundary, preventing divergent unread counts.
 - Demo alert fixtures have stable event IDs shared with mock Coach replies; used demo IDs survive dismissal until reset so presentation events cannot be duplicated.
+- Account details are matched by type in the data-access layer; pure account helpers prepare totals, changes, payoff years, and activity signs so presentation components never calculate financial values.
+- Account-to-Coach navigation uses optional validated account search state and sends its question through the existing reply boundary, keeping chat behavior shared with alert entry points.

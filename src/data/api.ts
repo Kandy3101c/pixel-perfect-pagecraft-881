@@ -1,6 +1,8 @@
 // Data access layer. Components must read data only through these hooks.
 // Swap the internals for real API calls later; signatures stay the same.
-import { mockData } from "./mock";
+import { accountDetails, mockData } from "./mock";
+import { accountPresentation, accountSummary } from "@/lib/accounts";
+import { formatUSD } from "@/lib/format";
 import { createDemoAlert, demoEvents } from "./demoAlerts";
 import type { Account, Alert, ChatMessage, CoachReply, Customer, Metric, MonthlyRecord, SpendingByCategory } from "./types";
 
@@ -10,6 +12,21 @@ export function useCustomer(): Customer {
 
 export function useAccounts(): Account[] {
   return mockData.accounts;
+}
+
+export function useAccountDetails() {
+  return mockData.accounts.flatMap((account) => {
+    const detail = accountDetails.find((item) => item.type === account.type);
+    return detail ? [accountPresentation(account, detail, mockData.monthly, mockData.customer.creditLimit)] : [];
+  });
+}
+
+export function useAccountSummary() {
+  return accountSummary(mockData.accounts);
+}
+
+export async function startBankConnection(): Promise<void> {
+  await new Promise<void>((resolve) => setTimeout(resolve, 1000));
 }
 
 export function useMonthly(): { months: MonthlyRecord[]; spendingByCategoryLastMonth: SpendingByCategory } {
@@ -39,6 +56,11 @@ export async function sendCoachMessage(
   void history;
   await new Promise<void>((resolve) => setTimeout(resolve, 1200));
   const text = message.toLowerCase();
+  const account = useAccountDetails().find((item) => text === `tell me about my ${item.label.toLowerCase()}`);
+  if (account) return {
+    reply: `Your ${account.label} balance is ${formatUSD(account.balance)}. ${account.rateLabel}. ${account.changeLabel}.${account.payoffLabel ? ` Payoff estimate: ${account.payoffLabel} ${account.payoff?.assumption}` : ""}`,
+    sources: [`${account.label} account`, "12-month account history"], verified: true,
+  };
   // Alert context takes precedence over words occurring in an alert's title.
   if (text.includes("explain this alert")) {
     const availableAlerts = [...mockData.alerts, ...demoEvents.map((event) => createDemoAlert(event.type, ""))];
