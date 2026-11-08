@@ -1,6 +1,6 @@
 // Data access layer. Components must read data only through these hooks.
 // Swap the internals for real API calls later; signatures stay the same.
-import { accountDetails, accountsSummaries, mockData } from "./mock";
+import { accountDetails, accountsSummaries, mockCoachReplies, mockData } from "./mock";
 import { accountPresentation } from "@/lib/accounts";
 import { createDemoAlert, demoEvents } from "./demoAlerts";
 import type { Account, Alert, AlertSettings, ChatMessage, CoachReply, Customer, CustomerProfile, Metric, MonthlyRecord, SpendingByCategory } from "./types";
@@ -138,13 +138,13 @@ export async function sendCoachMessage(message: string, history: ChatMessage[], 
     const alert = context?.alertId ? availableAlerts.find((a) => a.id === context.alertId) : availableAlerts.find((a) => text.includes(a.title.toLowerCase()));
     if (alert) return { reply: `${alert.reason} ${alert.suggestedAction}`, sources: ["Alerts"], verified: true };
   } else if (text.includes("credit") && /red|use|utilization/.test(text)) {
-    return { reply: "Your card balance is $9,971 and your limit is $5,332. That's 187% of your limit, so you're over it. A healthy level is under 30%. Your balance has also grown every month this past year, from $9,880 to $9,971.", sources: ["Credit card use metric", "Monthly card balances"], verified: true };
+    return mockCoachReplies[0];
   } else if (/money go|spend|spending/.test(text)) {
-    return { reply: "In October you spent $5,669. The biggest categories were housing ($1,990), groceries ($975), utilities ($884), and other spending ($884). Dining, shopping, and transport were $312 each.", sources: ["Spending by category, October 2026"], verified: true };
+    return mockCoachReplies[1];
   } else if (text.includes("income") && text.includes("debt")) {
-    return { reply: "Your scheduled debt payments are about 37% of your monthly income. A common target is under 36%. Your largest monthly payments are the mortgage at $1,832 and the auto loan at $602.", sources: ["Debt-to-income metric", "Account list"], verified: true };
+    return mockCoachReplies[2];
   } else if (/\$50|50 more|pay more/.test(text)) {
-    return { reply: "Right now your card balance grows by about $8 a month, because interest at 22.5% is a little more than what you pay down. Paying $50 more each month would flip that: the balance would start shrinking by roughly $40 a month at first.", sources: ["Credit card account", "Simulation: extra payment"], verified: true };
+    return mockCoachReplies[3];
   }
-  return { reply: "I'm running in demo mode right now, so I can only answer a few questions. Try one of the suggested questions.", sources: [], verified: false };
+  return mockCoachReplies[4];
 }

@@ -27,7 +27,6 @@ export const Route = createFileRoute("/")({
   component: Dashboard,
 });
 
-const SEV_RANK = { critical: 0, warning: 1, info: 2 } as const;
 const tooltipStyle = { borderRadius: 12, border: "1px solid var(--border)", boxShadow: "var(--shadow-soft)" };
 const axisTick = { fontSize: 13, fill: "var(--muted-foreground)", fontFamily: "var(--font-serif)" };
 
@@ -60,7 +59,7 @@ function Dashboard() {
     return () => clearTimeout(timer);
   }, [linked]);
 
-  const topAlert = alerts.filter((a) => !a.read).sort((a, b) => SEV_RANK[a.severity] - SEV_RANK[b.severity] || b.date.localeCompare(a.date))[0];
+  const topAlert = alerts.find((a) => !a.read);
   const monthData = months.map((m) => ({ ...m, label: formatMonthLabel(m.month) }));
   const categories = spendingByCategoryLastMonth;
   const assets = accounts.filter((a) => ["checking", "savings", "ira"].includes(a.type));

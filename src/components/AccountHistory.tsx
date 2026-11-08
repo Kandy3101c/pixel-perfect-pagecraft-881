@@ -10,7 +10,7 @@ export function AccountHistory({ account, compact = false }: { account: AccountV
         {!compact && <XAxis dataKey="month" tickFormatter={formatMonthLabel} axisLine={false} tickLine={false} minTickGap={22} tick={{ fill: "var(--muted-foreground)", fontFamily: "var(--font-serif)", fontSize: 12 }} />}
         {!compact && <Tooltip formatter={(value: number) => formatCurrency(value)} contentStyle={{ background: "var(--card)", borderColor: "var(--border)", borderRadius: 8, fontFamily: "var(--font-serif)" }} />}
         <YAxis hide={compact} width={60} domain={compact ? ["dataMin", "dataMax"] : account.type === "credit_card" ? [0, "auto"] : ["auto", "auto"]} tickFormatter={(value: number) => formatCurrency(value)} axisLine={false} tickLine={false} tick={{ fill: "var(--muted-foreground)", fontFamily: "var(--font-serif)", fontSize: 12 }} />
-        {!compact && account.type === "credit_card" && <ReferenceLine y={account.creditLimit} stroke="var(--risk)" strokeDasharray="6 4" label={{ value: `Limit ${formatCurrency(account.creditLimit)}`, position: "insideTopRight", fill: "var(--risk)", fontSize: 12 }} />}
+        {!compact && account.type === "credit_card" && account.creditLimit !== undefined && <ReferenceLine y={account.creditLimit} stroke="var(--risk)" strokeDasharray="6 4" label={{ value: `Limit ${formatCurrency(account.creditLimit)}`, position: "insideTopRight", fill: "var(--risk)", fontSize: 12 }} />}
         <Line dataKey="balance" name="Balance" stroke={account.changeTone === "good" ? "var(--primary)" : account.changeTone === "bad" ? "var(--risk)" : "var(--muted-foreground)"} strokeWidth={compact ? 2 : 2.5} dot={false} isAnimationActive={false} />
       </LineChart>
     </ResponsiveContainer>

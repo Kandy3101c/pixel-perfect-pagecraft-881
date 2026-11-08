@@ -49,7 +49,7 @@ function DebtToIncomeVisual({ metric }: { metric: Metric }) {
         <ResponsiveContainer>
           <PieChart>
             <Pie
-              data={metric.pieData}
+              data={metric.pieData ?? []}
               dataKey="value"
               startAngle={90}
               endAngle={-270}

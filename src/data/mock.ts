@@ -1,4 +1,4 @@
-import type { AccountDetail, MockData } from "./types";
+import type { AccountDetail, CoachReply, MockData } from "./types";
 
 export const mockData: MockData = {
   customer: { id: "C024", name: "Demo Customer (C024)", asOf: "2026-10-31", creditLimit: 5332.24 },
@@ -816,4 +816,12 @@ export const accountsSummaries = {
   allLinked: { totalAssets: 89857.68, totalDebts: 341218.59, totalMonthlyDebtPayments: 3319.06 },
   platypus: { totalAssets: 21131.81, totalDebts: 6667.18, totalMonthlyDebtPayments: 200.02 },
   empty: { totalAssets: 0, totalDebts: 0, totalMonthlyDebtPayments: 0 },
+};
+
+export const mockCoachReplies: Record<number, CoachReply> = {
+0: { reply: "Your card balance is $9,971 and your limit is $5,332. That's 187% of your limit, so you're over it. A healthy level is under 30%. Your balance has also grown every month this past year, from $9,880 to $9,971.", sources: ["Credit card use metric", "Monthly card balances"], verified: true },
+1: { reply: "In October you spent $5,669. The biggest categories were housing ($1,990), groceries ($975), utilities ($884), and other spending ($884). Dining, shopping, and transport were $312 each.", sources: ["Spending by category, October 2026"], verified: true },
+2: { reply: "Your scheduled debt payments are about 37% of your monthly income. A common target is under 36%. Your largest monthly payments are the mortgage at $1,832 and the auto loan at $602.", sources: ["Debt-to-income metric", "Account list"], verified: true },
+3: { reply: "Right now your card balance grows by about $8 a month, because interest at 22.5% is a little more than what you pay down. Paying $50 more each month would flip that: the balance would start shrinking by roughly $40 a month at first.", sources: ["Credit card account", "Simulation: extra payment"], verified: true },
+4: { reply: "I'm running in demo mode right now, so I can only answer a few questions. Try one of the suggested questions.", sources: [], verified: false },
 };
