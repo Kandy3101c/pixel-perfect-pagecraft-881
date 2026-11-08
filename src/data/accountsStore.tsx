@@ -9,6 +9,7 @@ const initialState = (): AccountsState => ({ institutions: [pncInstitution], acc
 
 export function createAccountsStore() {
   let state = initialState();
+  const serverSnapshot = initialState();
   let generation = 0;
   const listeners = new Set<() => void>();
   const changes = new Set<(change: AccountChange) => void>();
